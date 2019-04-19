@@ -8,11 +8,11 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink
-  /*UncontrolledDropdown,
+  NavLink,
+  UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem*/
+  DropdownItem
 } from "reactstrap";
 import {
   signIn,
@@ -20,6 +20,7 @@ import {
   getUserName,
   getProfilePicUrl
 } from "../Scripts/firebase";
+import  { Redirect } from 'react-router-dom'
 
 export default class Navbar extends Component {
   state = {
@@ -48,6 +49,10 @@ export default class Navbar extends Component {
     */
   }
 
+  goToProfile() {
+    return <Redirect to="/profile"/>
+  }
+
   render() {
     return (
       <div>
@@ -71,22 +76,23 @@ export default class Navbar extends Component {
                   Sign-in with Google
                 </NavLink>
               </NavItem>
-              {/* <NavItem>
-                <NavLink href="https://github.com/reactstrap/reactstrap">
-                  GitHub
-                </NavLink>
-              </NavItem>
+
+              {/*<NavLink id="profile" href="/profile" onClick={this.goToProfile}>
+                Profile
+              </NavLink>*/}
+
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  Options
+                  Navigate
                 </DropdownToggle>
                 <DropdownMenu right>
-                  <DropdownItem>Option 1</DropdownItem>
-                  <DropdownItem>Option 2</DropdownItem>
-                  <DropdownItem divider />
+                  <DropdownItem href="/">Home</DropdownItem>
+                  <DropdownItem href="/profile">Profile</DropdownItem>
+                  {/*<DropdownItem divider />
                   <DropdownItem>Reset</DropdownItem>
+                  */}
                 </DropdownMenu>
-              </UncontrolledDropdown>*/}
+              </UncontrolledDropdown>
             </Nav>
           </Collapse>
         </Navbarstrap>
@@ -96,13 +102,13 @@ export default class Navbar extends Component {
 }
 
 // Initiate firebase auth.
-function initFirebaseAuth() {
+const initFirebaseAuth = () => {
   // Listen to auth state changes.
   firebase.auth().onAuthStateChanged(authStateObserver);
-}
+};
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.
-function authStateObserver(user) {
+const authStateObserver = user => {
   var userPicElement = document.getElementById("user-pic");
   var userNameElement = document.getElementById("user-name");
   var signInButtonElement = document.getElementById("sign-in");
@@ -138,7 +144,7 @@ function authStateObserver(user) {
     // Show sign-in button.
     signInButtonElement.removeAttribute("hidden");
   }
-}
+};
 
 /*function checkSignedInWithMessage() {
   ..
@@ -160,12 +166,12 @@ var MESSAGE_TEMPLATE =
 */
 
 // Adds a size to Google Profile pics URLs.
-function addSizeToGoogleProfilePic(url) {
+const addSizeToGoogleProfilePic = url => {
   if (url.indexOf("googleusercontent.com") !== -1 && url.indexOf("?") === -1) {
     return url + "?sz=150";
   }
   return url;
-}
+};
 
 /*
 // Checks that the Firebase SDK has been correctly setup and configured.

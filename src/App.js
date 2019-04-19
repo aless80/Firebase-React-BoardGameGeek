@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import Login from "./Pages/Login";
 import Navbar from "./Components/Navbar";
 import Main from "./Pages/Main";
+import Profile from "./Pages/Profile";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 
@@ -60,6 +61,24 @@ export default class App extends Component {
           <main className="mdl-layout__content mdl-color--grey-100">
             <Switch>
               <Route exact path="/" component={Main} />
+              {/* 
+              <Route
+                path="/"
+                render={props => <Main {...props} user={this.state.user} />}
+              />
+              */}
+              <AuthenticatedRoute
+                exact
+                path="/profile2"
+                authenticated={this.state.user == null}
+                redirect="/"
+                component={Profile}
+              />
+              <Route
+                exact
+                path="/profile"
+                render={props => <Profile {...props} user={this.state.user} />}
+              />
               <AuthenticatedRoute
                 exact
                 path="/login"

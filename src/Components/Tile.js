@@ -11,15 +11,26 @@ export default class Tile extends Component {
     doc: undefined
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    //Always compare props
+    if (this.props.thing_id !== prevProps.thing_id) {
+      this.queryThingBGG();
+    }
+  }
+
   componentDidMount() {
+    this.queryThingBGG();
+  }
+
+  queryThingBGG() {
+    let queryUrl = `https://www.boardgamegeek.com/xmlapi2/thing?id=${
+      this.props.thing_id
+    }&stats=1`;
     axios
-      .get(
-        `https://www.boardgamegeek.com/xmlapi2/thing?id=${
-          this.props.thing_id
-        }&stats=1`
-      )
+      .get(queryUrl)
       .then(xml => {
         //console.log("xml:", xml);
+        console.log("Tile:", queryUrl);
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
         this.setState({ ...this.state, doc });
       })
@@ -131,7 +142,7 @@ export default class Tile extends Component {
           <div>
             <h3>
               {gameName}{" "}
-              <a href={url} target="_blank">
+              <a href={url} target="_blank" rel="noopener noreferrer">
                 Link
               </a>
             </h3>

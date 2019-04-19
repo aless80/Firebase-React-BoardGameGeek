@@ -2,8 +2,7 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import axios from "axios";
 import { extractValueFromElement } from "../Scripts/Utilities";
-import "./Search.css";
-
+import "./SearchBoardGame.css";
 // See https://github.com/moroshko/react-autosuggest#on-suggestion-selected-prop
 
 var timeout = undefined;
@@ -70,6 +69,7 @@ class SearchBoardGame extends React.Component {
 
   // Autosuggest will call this function every time you need to update suggestions.
   onSuggestionsFetchRequested = ({ value }) => {
+    this.setState({ suggestions: [] });
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => {
       this.loadSuggestions(value);
@@ -84,7 +84,7 @@ class SearchBoardGame extends React.Component {
     // Call API only when query has more than two letters
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
-    return inputLength < 3
+    return inputLength < 2
       ? this.setState({ ...this.state, suggestions: [] })
       : this.queryAPI(value, {
           exact: this.state.exact,
@@ -103,7 +103,7 @@ class SearchBoardGame extends React.Component {
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
         let suggestions = buildSuggestions(doc);
         this.setState({ ...this.state, suggestions: suggestions });
-        console.log("queryUrl:", queryUrl);
+        console.log(queryUrl);
       })
       .catch(err => console.error("err:", err));
   }
@@ -126,7 +126,7 @@ class SearchBoardGame extends React.Component {
   }
 
   // User clicks on a suggestion. Pass selection to parent
-  onSuggestionsSelected = (event, { suggestion }) => {
+  onSuggestionSelected = (event, { suggestion }) => {
     this.props.passSelection(suggestion);
   };
 
@@ -152,7 +152,7 @@ class SearchBoardGame extends React.Component {
           suggestions={suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-          onSuggestionSelected={this.onSuggestionsSelected}
+          onSuggestionSelected={this.onSuggestionSelected}
           getSuggestionValue={getSuggestionValue}
           renderSuggestion={renderSuggestion}
           inputProps={inputProps}
@@ -184,19 +184,6 @@ class SearchBoardGame extends React.Component {
             &nbsp; Boardgame &nbsp;&nbsp;
           </label>
         </span>
-        <span key="boardgameaccessory">
-          <label>
-            <input
-              type="checkbox"
-              id="boardgameaccessory"
-              name="boardgameaccessory"
-              value={boardgameaccessory}
-              checked={boardgameaccessory === 1}
-              onChange={event => this.onToggleCheckbox(event)}
-            />
-            &nbsp; Accessory &nbsp;&nbsp;
-          </label>
-        </span>
         <span key="boardgameexpansion">
           <label>
             <input
@@ -208,6 +195,19 @@ class SearchBoardGame extends React.Component {
               onChange={event => this.onToggleCheckbox(event)}
             />
             &nbsp; Expansion &nbsp;&nbsp;
+          </label>
+        </span>
+        <span key="boardgameaccessory">
+          <label>
+            <input
+              type="checkbox"
+              id="boardgameaccessory"
+              name="boardgameaccessory"
+              value={boardgameaccessory}
+              checked={boardgameaccessory === 1}
+              onChange={event => this.onToggleCheckbox(event)}
+            />
+            &nbsp; Accessory &nbsp;&nbsp;
           </label>
         </span>
       </div>

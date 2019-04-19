@@ -2,28 +2,28 @@ import React, { Component } from "react";
 import Tile from "../Components/Tile";
 import SearchBoardGame from "../Components/SearchBoardGame";
 import ButtonsAddGame from "../Components/ButtonsAddGame";
-import {
-  /*getCurrentUser
-  getUser 
-  getGameReference,
-  setGameReference,
-  getUserReference,
-  //setUserReference,
-  pushGameToUser
-  /*fire_users,
-  getUser,
-  setUserReference,
-  getUserReference*/
-} from "../Scripts/firebase";
+//import Deck from '../Components/Deck'
+import { /*getCurrentUser, getUserName,*/ getUser } from "../Scripts/firebase";
 
-class Main extends Component {
+class Profile extends Component {
   state = {
     username: undefined,
     name: undefined,
     thing_id: undefined,
-    user_data: undefined
+    user_data: []
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.user !== prevProps.user) {
+      let username = this.props.user.displayName;
+      getUser(username, doc => {
+        const user_data = doc.data();
+        this.setState({ ...this.state, username, user_data });
+      });
+    }
+  }
+
+  // Called by SearchBoardGame when a boardgame suggestion is selected
   setSelectedGame(selectedSuggestion) {
     console.log("Main selectedSuggestion:", selectedSuggestion);
     this.setState({
@@ -34,11 +34,14 @@ class Main extends Component {
   }
 
   render() {
-    let { thing_id, name } = this.state;
+    let { thing_id, name, username, user_data } = this.state;
     return (
       <div>
         <br />
-        <h1>Main</h1>
+        <h1>Welcome {username}!</h1>
+        <br />
+        <h2>Search a game</h2>
+        <br />
         <div className="panel-body">
           <SearchBoardGame
             exact={1}
@@ -49,18 +52,22 @@ class Main extends Component {
               this.setSelectedGame(selectedSuggestion)
             }
           />
-          <br />
           {thing_id && (
             <div>
               <Tile thing_id={thing_id} />
-              <br />
               <ButtonsAddGame thing_id={thing_id} name={name} />
             </div>
           )}
         </div>
+        <br />
+        <h2>Your games</h2>
+        {user_data.thing_ids &&
+          user_data.thing_ids.map(gameid => (
+            <Tile key={gameid} thing_id={gameid} />
+          ))}
       </div>
     );
   }
 }
 
-export default Main;
+export default Profile;

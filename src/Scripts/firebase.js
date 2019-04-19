@@ -97,6 +97,15 @@ export const uploadToStorage = (
 };
 
 /**
+ * Return the signed-in user.
+ *
+ * @return {object}
+ */
+export const getCurrentUser = () => {
+  return firebase.auth().currentUser;
+};
+
+/**
  * Return the signed-in user's display name.
  *
  * @return {string}
@@ -159,170 +168,370 @@ export const signOut = () => {
   firebase.auth().signOut();
 };
 
-/* CRUD and other operations on Comments and Posts collections in Firebase Database */
+/* CRUD and other operations on Users and Games collections in Firebase Database */
 
 /**
- * Get the post collection
+ * Get the User collection
  * @type {firebase.firestore.DocumentReference}
  */
-export const fire_posts = firebase.firestore().collection("posts");
+export const fire_users = firebase.firestore().collection("Users");
 
 /**
- * Get the number of documents in the Posts collection. Should work fine for small (<100) collections.
- * See https://stackoverflow.com/questions/46554091/firebase-firestore-collection-count/49407570
- *
- * @callback [onCommentSnapshot] - Callback on a query snapshot (e.g. use .size, .empty, .forEach) triggering when results are retrieved for the Comments collection
- */
-export const postQuerySnapshot = onCommentSnapshot => {
-  return fire_posts.get().then(snap => {
-    onCommentSnapshot(snap);
-  });
-};
-
-/**
- * Get the comment collection
+ * Get the Games collection
  * @type {firebase.firestore.CollectionReference}
  */
-export const fire_comments = firebase.firestore().collection("comments");
+export const fire_games = firebase.firestore().collection("Games");
 
 /**
- * Get a DocumentReference to a post. It can be used to populate properties such as id and path before actually saving the post
+ * Get a user document and optionally run a callback on it
  *
- * @return {DocumentReference} - A reference to a document in firebase firestore
+ * @param {string} username - The user id
+ * @callback [onGetDocument] - Callback on a document triggering when comment document is successfully retrieved
  */
-export const getPostReference = () => {
-  var fire_post = fire_posts.doc();
-  return fire_post;
+export const getUser = (username, onGetDocument = () => {}) => {
+  fire_users
+    .doc(username)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        onGetDocument(doc);
+      } else {
+        console.error("No such User document");
+      }
+    });
 };
 
 /**
  *
- * @param {*} fire_post - An existing DocumentReference to a Post
- * @param {*} data_post - The Post data to be set
- * @callback [onSetDocument] - Callback triggering when Comment document is successfully set
+ * @param {*} fire_user - An existing DocumentReference to a user
+ * @param {*} data_user - The user data to be set
+ * @callback [onSetDocument] - Callback triggering when User document is successfully set
  */
-export const setPostReference = (
-  fire_post,
-  data_post,
+export const setUserReference = (
+  fire_user,
+  data_user,
   onSetDocument = () => {}
 ) => {
-  fire_post.set(data_post).then(() => {
+  fire_user.set(data_user).then(() => {
     onSetDocument();
   });
 };
 
 /**
- * Get a post document and optionally run a callback on it
+ * Get a DocumentReference to a user. It can be used to populate properties before actually saving the user
  *
- * @param {string} post_key - The post id
- * @callback [onGetDocument] - Callback on a document triggering when comment document is successfully retrieved
+ * @return {DocumentReference} - A reference to a document in firebase firestore
  */
-export const getPost = (post_key, onGetDocument = () => {}) => {
-  fire_posts
-    .doc(post_key)
-    .get()
-    .then(doc => {
-      if (doc.exists) {
-        onGetDocument(doc);
-      } else {
-        console.error("No such Post document");
-      }
-    });
+export const getUserReference = username => {
+  var fire_user;
+  if (username) {
+    fire_user = fire_users.doc(username);
+  } else {
+    fire_user = fire_users.doc();
+  }
+  return fire_user;
 };
 
 /**
- * Get a comment document and optionally run a callback on it
+ * Get a DocumentReference to a game. It can be used to populate properties before actually saving the game
  *
- * @param {string} post_key - The post id
- * @callback [onGetDocument] - Callback on a document triggering comment document is successfully retrieved
+ * @param {string} game_id - The document ID
+ * @return {DocumentReference} - A reference to a document in firebase firestore
  */
-export const getComment = (post_key, onGetDocument = () => {}) => {
-  fire_comments
-    .doc(post_key)
+export const getGameReference = game_id => {
+  var fire_game;
+  if (game_id) {
+    fire_game = fire_games.doc(game_id);
+  } else {
+    fire_game = fire_games.doc();
+  }
+  return fire_game;
+};
+
+/**
+ * Get a Game document and optionally run a callback on it
+ *
+ * @param {string} thing_id - The game id from BGG
+ * @callback [onGetDocument] - Callback on a document triggering game document is successfully retrieved
+ */
+export const getGame = (thing_id, onGetDocument = () => {}) => {
+  fire_games
+    .doc(thing_id)
     .get()
     .then(doc => {
       if (doc.exists) {
         onGetDocument(doc);
       } else {
-        console.error("No such Comment document");
+        console.error("No such Game document");
       }
     })
     .catch(error => {
-      console.error("Error on getting comment: ", error);
+      console.error("Error on getting game: ", error);
       return;
     });
 };
 
 /**
- * Add a user's comment (i.e. a map in the Comment document) at position comment_key
+ * Save a Game reference
  *
- * @param {string} post_key - The post id
- * @param {number} comment_key - The comment key
- * @param {object} data_comment
- * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
+ * @param {*} fire_game - An existing DocumentReference to a user
+ * @param {*} data_game - The user data to be set
+ * @callback [onSetDocument] - Callback triggering when User document is successfully set
  */
-export const pushComment = (
-  post_key,
-  comment_key,
+export const setGameReference = (
+  fire_game,
+  data_game,
+  onSetDocument = () => {}
+) => {
+  fire_game
+    .set(data_game)
+    .then(() => {
+      onSetDocument();
+    })
+    .catch(function(error) {
+      console.error("setGameReference: Error writing document: ", error);
+    });
+};
+
+/**
+ * Append a game to a User document
+ *
+ * @param {string} category - Boardgame status e.g. 'owned', 'whishlist'
+ * @param {string[]} thing_ids - Array with game IDs from BGG
+ * @param {string[]} names - Array with game names from BGG
+ * @param {*} data - Data to be set in the Game document. It should contain the game owner in the lastEditor field
+ * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
+ *
+ */
+export const pushGames = (
+  category,
+  thing_ids,
+  names,
   data,
   onSetDocument = () => {}
 ) => {
-  const fire_comment_doc = fire_comments.doc(post_key);
-  fire_comment_doc.get().then(doc => {
-    var document = doc.data();
-    if (!document) document = {};
-    document[comment_key] = data;
-    fire_comment_doc
-      .set(document)
-      .then(onSetDocument())
-      .catch(error => {
-        console.error("Error on setting comment document: ", error);
+  var fire_allgames = fire_games.doc(category);
+  let edited = 0;
+  fire_allgames
+    .get()
+    .then(doc => {
+      var document = doc.data();
+      if (!document) {
+        document = { thing_ids: [], names: [], owners: [] };
+      }
+      thing_ids.forEach((thing_id, ind) => {
+        const owner = getUserName();
+        const thing_id_ind = document["thing_ids"].indexOf(thing_id);
+        if (thing_id_ind === -1) {
+          edited = 1;
+          document["thing_ids"].push(thing_id);
+          document["names"].push(names[ind]);
+          document["owners"].push(owner);
+        } else {
+          if (
+            document["owners"][thing_id_ind].split(",").indexOf(owner) === -1
+          ) {
+            edited = 1;
+            if (document["owners"][thing_id_ind].length) {
+              document["owners"][thing_id_ind] += ",";
+            }
+            document["owners"][thing_id_ind] += owner;
+          }
+        }
       });
+      // Save the Game document to Firebase only if it was modified
+      if (edited) {
+        //Store last edit info
+        document = { ...document, ...data };
+        fire_allgames
+          .set(document)
+          .then(onSetDocument())
+          .catch(error => {
+            console.error("Error on setting User document: ", error);
+          });
+      } else {
+        console.log(
+          "The Game document already contained the user's boardgame and did not need to be updated"
+        );
+      }
+    })
+    .catch(error => {
+      console.error("Error on getting Game document: ", error);
+    });
+};
+
+/**
+ * Append a game to a User document
+ *
+ * @param {string} categories - Boardgame status e.g. 'owned', 'whishlist'
+ * ---@param {string} owner - The username/boardgame owner
+ * @param {string[]} thing_ids - Array with game IDs from BGG
+ * @param {string[]} names - Array with game names from BGG
+ * @param {*} data - Data to be set in the Game document
+ * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
+ *
+ */
+export const pushGamesToUser = (
+  categories,
+  thing_ids,
+  names,
+  data,
+  onSetDocument = () => {}
+) => {
+  const owner = getUserName();
+  const fire_user = getUserReference(owner);
+  let edited = 0;
+  fire_user
+    .get()
+    .then(doc => {
+      var document = doc.data();
+      if (!document) {
+        document = { thing_ids: [], names: [], categories: [] };
+      }
+      thing_ids.forEach((thing_id, ind) => {
+        const thing_id_ind = document["thing_ids"].indexOf(thing_id);
+        if (thing_id_ind === -1) {
+          // Adding a new boardgame to the User document
+          edited = 1;
+          document["thing_ids"].push(thing_id);
+          document["names"].push(names[ind]);
+          document["categories"].push(categories[ind]);
+        } else {
+          // Game already owned by other users
+          if (
+            document["categories"][thing_id_ind]
+              .split(",")
+              .indexOf(categories[ind]) === -1
+          ) {
+            edited = 1;
+            if (document["categories"][thing_id_ind].length) {
+              document["categories"][thing_id_ind] += ",";
+            }
+            document["categories"][thing_id_ind] += categories[ind];
+          }
+        }
+      });
+      // Save the Game document to Firebase only if it was modified
+      if (edited) {
+        //Store last edit info
+        document = { ...document, ...data };
+        fire_user
+          .set(document)
+          .then(onSetDocument())
+          .catch(error => {
+            console.error("Error on setting User document: ", error);
+          });
+      } else {
+        console.log(
+          "The User document already contained the user's boardgame and did not need to be updated"
+        );
+      }
+    })
+    .catch(error => {
+      console.error("Error on getting User document: ", error);
+    });
+};
+
+/**
+ * Append a game to a User document
+ *
+ * @param {string} username - The username
+ * @param {string[]} thing_ids - Array with game IDs from BGG
+ * @param {string[]} names - Array with game names from BGG
+ * @param {*} data - Optional data for the User document
+ * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
+ *
+ */
+export const pushGamesToUserOLD = (
+  username,
+  thing_id,
+  name,
+  data,
+  onSetDocument = () => {}
+) => {
+  const fire_user = getUserReference(username);
+  fire_user
+    .get()
+    .then(doc => {
+      var document = doc.data();
+      if (!document) {
+        document = { thing_id: [], name: [] };
+      }
+      document = { ...document, ...data };
+      if (document["thing_id"].indexOf(thing_id) === -1) {
+        return console.error(
+          "Game already present in User document with username",
+          username
+        );
+      }
+      document["thing_id"].push(thing_id);
+      document["name"].push(name);
+      fire_user
+        .set(document)
+        .then(onSetDocument())
+        .catch(error => {
+          console.error("Error on setting User document: ", error);
+        });
+    })
+    .catch(error => {
+      console.error("Error on getting User document: ", error);
+    });
+};
+
+/**
+ * Get the number of documents in the User collection. Should work fine for small (<100) collections.
+ * See https://stackoverflow.com/questions/46554091/firebase-firestore-collection-count/49407570
+ *
+ * @callback [onCommentSnapshot] - Callback on a query snapshot (e.g. use .size, .empty, .forEach) triggering when results are retrieved for the Comments collection
+ */
+export const userQuerySnapshot = onCommentSnapshot => {
+  return fire_users.get().then(snap => {
+    onCommentSnapshot(snap);
   });
 };
 
 /**
- * Update a Post in firebase
+ * Update a User in firebase
  *
- * @param {string} post_key - The post id
- * @param {object} data_post - Object with key-value pairs to edit in the post document
+ * @param {string} user_key - The user id
+ * @param {object} data_user - Object with key-value pairs to edit in the user document
  * @callback [onAfterupdate] - Callback triggering after a successfull update. No document available
  */
-export const updatePost = (post_key, data_post, onAfterUpdate = () => {}) => {
-  const fire_post_doc = fire_posts.doc(post_key);
-  fire_post_doc
+export const updateUser = (user_key, data_user, onAfterUpdate = () => {}) => {
+  const fire_user_doc = fire_users.doc(user_key);
+  fire_user_doc
     .get()
     .then(doc0 => {
-      fire_post_doc
-        .update({ ...doc0.data(), ...data_post })
+      fire_user_doc
+        .update({ ...doc0.data(), ...data_user })
         .then(() => {
           /* NB: no document available */
           onAfterUpdate();
         })
         .catch(error => {
-          console.error("Error updating post document: ", error);
+          console.error("Error updating user document: ", error);
         });
     })
     .catch(error => {
-      console.error("Error getting a post: ", error);
+      console.error("Error getting a user: ", error);
     });
 };
 
 /**
  * Update a comment document
  *
- * @param {string} post_key - The post id
+ * @param {string} user_key - The user id
  * @param {string} commentid - The comment key
  * @param {object} data_comment - Object with key-value pairs to edit in the comment document
  * @callback [onAfterSetDocument] - Callback triggering on a successful write of the Comment document (e.g. window.location.reload())
  */
 export const updateComment = (
-  post_key,
+  user_key,
   commentid,
   data_comment,
   onAfterSetDocument = () => {}
 ) => {
-  const fire_comment_doc = fire_comments.doc(post_key);
+  const fire_comment_doc = fire_games.doc(user_key);
   fire_comment_doc
     .get()
     .then(doc0 => {
@@ -339,44 +548,4 @@ export const updateComment = (
       console.error("Error on getting comment: ", error);
       return;
     });
-};
-
-/**
- * Delete text, username, etc of a user's comment (i.e. a key of a comment document)
- *
- * @param {string} post_key - The post id
- * @param {string} commentid - The comment key
- * @callback [onAfterSetDocument] - Callback triggering on a successful write of the Comment document (e.g. window.location.reload())
- */
-export const invalidateComment = (post_key, commentid, onAfterSetDocument) => {
-  const data_comment = {
-    author: "",
-    comments: 1,
-    profilePicUrl: "",
-    plainText: "Comment deleted",
-    richText: "<blockquote>Comment deleted</blockquote>",
-    lastEdit: firebase.firestore.FieldValue.serverTimestamp()
-    //timestamp: timestamp
-  };
-  updateComment(post_key, commentid, data_comment, onAfterSetDocument);
-};
-
-/**
- * Delete text, username, etc of a user's post document
- *
- * @param {string} post_key - The post id
- * @callback [onAfterupdate] - Callback triggering on a successful update of the Post document (e.g. window.location.reload())
- */
-export const invalidatePost = (post_key, onAfterupdate) => {
-  const data_post = {
-    author: "",
-    comments: 1,
-    profilePicUrl: "",
-    plainText: "Post deleted",
-    status: "closed",
-    lastEdit: firebase.firestore.FieldValue.serverTimestamp()
-    //title: ""
-    //timestamp: timestamp
-  };
-  updatePost(post_key, data_post, onAfterupdate);
 };
