@@ -14,7 +14,14 @@ Main page             |  Post
 Create an account in Firebase with a database. Set up a Database. Find the configuration and place it in a src/Firebase.js file that you create from template:
 ```cp src/Firebase_example.js src/Firebase.js```
 
-<!--## Data structure in Firebase
+<!--
+
+## TODO
+* SearchCollection: getting Error on calling the API:Error: Network Error
+* refresh game list in profile when adding game
+
+
+## Data structure in Firebase
 ```
 post: {
   "AA4aQdp_post_key": {

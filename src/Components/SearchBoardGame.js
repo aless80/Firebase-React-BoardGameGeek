@@ -2,12 +2,13 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import axios from "axios";
 import { extractValueFromElement } from "../Scripts/Utilities";
-import "./SearchBoardGame.css";
 // See https://github.com/moroshko/react-autosuggest#on-suggestion-selected-prop
 
 var timeout = undefined;
 
 // Construct the URL for API calls
+// value: the query
+// params (required): parameters object including boardgame, boardgameaccessory, boardgameexpansion
 const buildURL = (value, params) => {
   let exact = params.exact;
   let typesObj = {

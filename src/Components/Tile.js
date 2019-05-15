@@ -1,8 +1,18 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { extractValueFromElement } from "../Scripts/Utilities";
+import { extractValueFromElements } from "../Scripts/Utilities";
 //import { Container, ListGroup, ListGroupItem } from "reactstrap";
 //import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { Container, Row, Col } from "reactstrap";
+import "./Tile.css";
+// Construct the URL for API calls
+// value is the thing id
+// params (required): parameters object including stats
+const buildURL = (value, params) => {
+  let stats = params.stats;
+  let queryUrl = `https://www.boardgamegeek.com/xmlapi2/thing?id=${value}&stats=${stats}`;
+  return queryUrl;
+};
 
 export default class Tile extends Component {
   state = {
@@ -14,18 +24,16 @@ export default class Tile extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     //Always compare props
     if (this.props.thing_id !== prevProps.thing_id) {
-      this.queryThingBGG();
+      this.queryBGGThing(this.props.thing_id);
     }
   }
 
   componentDidMount() {
-    this.queryThingBGG();
+    this.queryBGGThing(this.props.thing_id);
   }
 
-  queryThingBGG() {
-    let queryUrl = `https://www.boardgamegeek.com/xmlapi2/thing?id=${
-      this.props.thing_id
-    }&stats=1`;
+  queryBGGThing(value) {
+    let queryUrl = buildURL(value, { stats: 1 });
     axios
       .get(queryUrl)
       .then(xml => {
@@ -34,7 +42,7 @@ export default class Tile extends Component {
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
         this.setState({ ...this.state, doc });
       })
-      .catch(err => console.error("err:", err));
+      .catch(err => console.error("Error on calling the API::", err));
   }
 
   indexOfMax(arr) {
@@ -52,149 +60,221 @@ export default class Tile extends Component {
     return maxIndex;
   }
 
-  // TODO: put everything in an object
   render() {
     let { doc } = this.state;
-    let url = `https://boardgamegeek.com/boardgame/${this.props.thing_id}/`;
-    let gameName;
-    let img_src;
-    let yearpublished;
-    let minplayers;
-    let maxplayers;
-    let playingtime;
-    let minplaytime;
-    let maxplaytime;
-    let boardgamecategory;
-    let boardgamemechanic;
-    let usersrated;
-    let average;
-    let stddev;
-    let averageweight;
-    let numplayers;
-    let numvotes;
-    let bestnplayers;
+    let url = buildURL(this.props.thing_id, { stats: 1 });
+    let obj = {};
     if (typeof doc !== "undefined") {
-      gameName = doc.getElementsByTagName("name")[0].getAttribute("value");
-      img_src = doc.getElementsByTagName("image")[0].childNodes[0].nodeValue;
-      yearpublished = doc.getElementsByTagName("yearpublished")[0].attributes
-        .value.nodeValue;
-      minplayers = doc.getElementsByTagName("minplayers")[0].attributes.value
-        .nodeValue;
-      maxplayers = doc.getElementsByTagName("maxplayers")[0].attributes.value
-        .nodeValue;
-      playingtime = doc.getElementsByTagName("playingtime")[0].attributes.value
-        .nodeValue;
-      minplaytime = doc.getElementsByTagName("minplaytime")[0].attributes.value
-        .nodeValue;
-      maxplaytime = doc.getElementsByTagName("maxplaytime")[0].attributes.value
-        .nodeValue;
+      obj["gameName"] = doc
+        .getElementsByTagName("name")[0]
+        .getAttribute("value");
+      obj["img_src"] = doc.getElementsByTagName(
+        "image"
+      )[0].childNodes[0].nodeValue;
+      obj["yearpublished"] = doc.getElementsByTagName(
+        "yearpublished"
+      )[0].attributes.value.nodeValue;
+      obj["minplayers"] = doc.getElementsByTagName(
+        "minplayers"
+      )[0].attributes.value.nodeValue;
+      obj["maxplayers"] = doc.getElementsByTagName(
+        "maxplayers"
+      )[0].attributes.value.nodeValue;
+      obj["playingtime"] = doc.getElementsByTagName(
+        "playingtime"
+      )[0].attributes.value.nodeValue;
+      obj["minplaytime"] = doc.getElementsByTagName(
+        "minplaytime"
+      )[0].attributes.value.nodeValue;
+      obj["maxplaytime"] = doc.getElementsByTagName(
+        "maxplaytime"
+      )[0].attributes.value.nodeValue;
       // Link with game characteristics
       // Example: <link type="boardgamecategory" id="1026" value="Negotiation"/>
-      boardgamecategory = extractValueFromElement(
+      obj["boardgamecategory"] = extractValueFromElements(
         doc,
         "link",
+        "value",
         "type",
-        "boardgamecategory",
-        "value"
+        "boardgamecategory"
       ).join(", ");
       // Example: <link type="boardgamemechanic" id="2072" value="Dice Rolling"/>
-      boardgamemechanic = extractValueFromElement(
+      obj["boardgamemechanic"] = extractValueFromElements(
         doc,
         "link",
+        "value",
         "type",
-        "boardgamemechanic",
-        "value"
+        "boardgamemechanic"
       ).join(", ");
       // Polls
       // Extract two arrays with this information
       // <results numplayers="3">
       //   <result value="Best" numvotes="421"/> ..
-      numplayers = extractValueFromElement(
-        doc,
-        "results",
-        "value",
-        "",
-        "numplayers"
-      );
-      numvotes = extractValueFromElement(
+      let numplayers = extractValueFromElements(doc, "results", "numplayers");
+      let numvotes = extractValueFromElements(
         doc,
         "result",
+        "numvotes",
         "value",
-        "Best",
-        "numvotes"
+        "Best"
       );
-      bestnplayers = numplayers[this.indexOfMax(numvotes)];
+      obj["bestnplayers"] = numplayers[this.indexOfMax(numvotes)];
       // Stats
-      //let stats = doc.getElementsByTagName("statistics")[0].attributes.value;
-      usersrated = doc.getElementsByTagName("usersrated")[0].attributes.value
-        .nodeValue;
-      average = doc.getElementsByTagName("average")[0].attributes.value
-        .nodeValue;
-      stddev = doc.getElementsByTagName("stddev")[0].attributes.value.nodeValue;
-      averageweight = doc.getElementsByTagName("averageweight")[0].attributes
-        .value.nodeValue;
+      //obj[stats] = doc.getElementsByTagName("statistics")[0].attributes.value;
+      obj["usersrated"] = doc.getElementsByTagName(
+        "usersrated"
+      )[0].attributes.value.nodeValue;
+      obj["average"] = doc.getElementsByTagName(
+        "average"
+      )[0].attributes.value.nodeValue;
+      obj["stddev"] = doc.getElementsByTagName(
+        "stddev"
+      )[0].attributes.value.nodeValue;
+      obj["averageweight"] = doc.getElementsByTagName(
+        "averageweight"
+      )[0].attributes.value.nodeValue;
     }
-    //console.log("doc:", doc);
     return (
       <div>
         {doc === "undefined" && <div className="spinner" />}
         {typeof doc !== "undefined" && (
-          <div>
-            <h3>
-              {gameName}{" "}
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                Link
-              </a>
-            </h3>
-            <img
-              id="thingImg"
-              src={img_src}
-              alt="img"
-              style={{ maxHeight: "300px" }}
-            />
+          <Container className="tile_container">
+            <Row className="tile_row">
+              <Col sm="3">
+                <img
+                  className="game_img"
+                  src={obj.img_src}
+                  alt="img"
+                  style={{ display:"inline-block", alignItems: "center" }}
+                />
+              </Col>
+              <Col
+                sm="6"
+                style={{
+                  borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+                }}
+              >
+                <Container>
+                  <Row>
+                    <Col sm="3">
+                      <div className="hex">
+                        <div
+                          class="rating"
+                          title={
+                            "Rating: " +
+                            parseFloat(obj.average).toFixed(1) +
+                            "\u00B1" +
+                            parseFloat(obj.stddev).toFixed(1) +
+                            "\nRated by " +
+                            obj.usersrated +
+                            " users"
+                          }
+                        >
+                          {parseFloat(obj.average).toFixed(1)}
+                        </div>
+                      </div>
+                    </Col>
+                    <Col sm="7">
+                      <h3>{obj.gameName + " (" + obj.yearpublished + ")"}</h3>
+                    </Col>
+                    <Col sm="1">
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        <h3>Link</h3>
+                      </a>
+                    </Col>
+                    <Col sm="1" />
+                  </Row>
+                </Container>
+                <br />
+                <Container>
+                  <Row>
+                    <Col
+                      style={{
+                        borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+                        borderTop: "1px solid rgba(255, 255, 255, 0.1)"
+                      }}
+                    >
+                      <p>
+                        <b>
+                          {obj.minplayers + "-" + obj.maxplayers + " Players"}
+                        </b>
+                      </p>
+                      <p>Best {obj.bestnplayers}</p>
+                    </Col>
+                    <Col
+                      style={{
+                        borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+                        borderTop: "1px solid rgba(255, 255, 255, 0.1)"
+                      }}
+                    >
+                      <p
+                        title={
+                          " (" +
+                          obj.minplaytime +
+                          "-" +
+                          obj.maxplaytime +
+                          ") Min"
+                        }
+                      >
+                        <b>{obj.playingtime + " Min"}</b>
+                      </p>
+                      <p>Playing time</p>
+                    </Col>
+                    <Col
+                      style={{
+                        borderTop: "1px solid rgba(255, 255, 255, 0.1)"
+                      }}
+                    >
+                      <p>
+                        <b>
+                          {"Weight: " +
+                            parseFloat(obj.averageweight).toFixed(1) +
+                            " / 5"}
+                        </b>
+                      </p>
+                    </Col>
+                  </Row>
+                </Container>
+                <br />
+                <Container>
+                  <Row>
+                    <Col
+                      sm={{ size: 6, order: 1 }}
+                      style={{
+                        borderTop: "1px solid rgba(255, 255, 255, 0.1)"
+                      }}
+                    >
+                      <p>
+                        <b>Game mechanics</b>
+                      </p>
+                      <p>{obj.boardgamemechanic}</p>
+                    </Col>
+                    <Col
+                      sm={{ size: 6, order: 2 }}
+                      style={{
+                        borderTop: "1px solid rgba(255, 255, 255, 0.1)"
+                      }}
+                    >
+                      <p>
+                        <b>Category</b>
+                      </p>
+                      <p>{obj.boardgamecategory}</p>
+                    </Col>
+                  </Row>
+                </Container>
+              </Col>
+              <Col sm="3">
+                <p>
+                  <b>Owners TODO: </b>
+                </p>
+                <p>{obj.boardgamemechanic}</p>
+              </Col>
+            </Row>
             <br />
-            <br />
-            <p>{"Year published: " + yearpublished}</p>
-            <p>
-              {"Players: " +
-                minplayers +
-                "-" +
-                maxplayers +
-                " - Best " +
-                bestnplayers}
-            </p>
-            <p title={"Rated by " + usersrated + " users"}>
-              {"Rating: " +
-                parseFloat(average).toFixed(1) +
-                "\u00B1" +
-                parseFloat(stddev).toFixed(1)}
-            </p>
-            <p>{"Weight: " + parseFloat(averageweight).toFixed(1)}</p>
-            <p>
-              {" Playing time: " +
-                playingtime +
-                " (" +
-                minplaytime +
-                "-" +
-                maxplaytime +
-                ") Min"}
-            </p>
-            <p>Category: {boardgamecategory}</p>
-            <p>Game mechanics: {boardgamemechanic}</p>
-            {/*<Container>
-              <ListGroup>
-                <TransitionGroup className="list">
-                  {data.map(({ id, userId, title, body }) => (
-                    <CSSTransition key={id} timeout={500} classNames="fade">
-                      <ListGroupItem key={id}>
-                        {id} {title}
-                      </ListGroupItem>
-                    </CSSTransition>
-                  ))}
-                </TransitionGroup>
-              </ListGroup>
-            </Container>*/}
-          </div>
+          </Container>
         )}
       </div>
     );

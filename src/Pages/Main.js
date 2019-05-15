@@ -40,6 +40,10 @@ class Main extends Component {
         <br />
         <h1>Main</h1>
         <div className="panel-body">
+        <br />
+        <h2>Search a game</h2>
+        <br />
+        <div className="searchBoardGame">
           <SearchBoardGame
             exact={1}
             boardgame={1}
@@ -49,7 +53,10 @@ class Main extends Component {
               this.setSelectedGame(selectedSuggestion)
             }
           />
+          </div>
           <br />
+
+          <div className="suggestedBoardGame">
           {thing_id && (
             <div>
               <Tile thing_id={thing_id} />
@@ -57,6 +64,8 @@ class Main extends Component {
               <ButtonsAddGame thing_id={thing_id} name={name} />
             </div>
           )}
+        </div>
+
         </div>
       </div>
     );
