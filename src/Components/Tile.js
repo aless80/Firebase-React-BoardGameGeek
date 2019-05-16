@@ -17,9 +17,9 @@ const buildURL = (value, params) => {
 export default class Tile extends Component {
   state = {
     thing_id: this.props.thing_id,
-    //xml: undefined,
     doc: undefined
   };
+  owners = this.props.owners;
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     //Always compare props
@@ -149,7 +149,8 @@ export default class Tile extends Component {
                   style={{ display: "inline-block", alignItems: "center" }}
                 />
               </Col>
-              <Col sm="6">
+              <Col sm={this.owners ? "6" : "9"}>
+                ---{this.owners}---{this.owners ? "yes" : "no"}
                 <Container>
                   <Row>
                     <Col sm="3">
@@ -171,7 +172,9 @@ export default class Tile extends Component {
                       </div>
                     </Col>
                     <Col sm="7">
-                      <h3 className="vcenter">{obj.gameName + " (" + obj.yearpublished + ")"}</h3>
+                      <h3 className="vcenter">
+                        {obj.gameName + " (" + obj.yearpublished + ")"}
+                      </h3>
                     </Col>
                     <Col sm="1">
                       <a href={url} target="_blank" rel="noopener noreferrer">
@@ -259,12 +262,16 @@ export default class Tile extends Component {
                   </Row>
                 </Container>
               </Col>
-              <Col sm="3">
-                <p>
-                  <b>Owners TODO: </b>
-                </p>
-                <p>{obj.boardgamemechanic}</p>
-              </Col>
+              {this.owners && (
+                <Col sm="3">
+                  <p>
+                    <b>Owners</b>
+                  </p>
+                  {this.owners.split(",").map((owner, ind) => (
+                    <p key={ind}>{owner}</p>
+                  ))}
+                </Col>
+              )}
             </Row>
             <br />
           </Container>

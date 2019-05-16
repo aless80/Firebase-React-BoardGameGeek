@@ -8,7 +8,11 @@ import {
   /*getCurrentUser, getUserName,*/ getUser,
   getGames
 } from "../Scripts/firebase";
-import { getSessionStorage, setSessionStorage } from "../Scripts/Utilities";
+import {
+  getSessionStorage,
+  setSessionStorage,
+  getOwnersForGame
+} from "../Scripts/Utilities";
 import "../Components/SearchBoardGame.css";
 
 class Profile extends Component {
@@ -42,7 +46,6 @@ class Profile extends Component {
 
   // Called by SearchBoardGame when a boardgame suggestion is selected
   setSelectedGame(selectedSuggestion) {
-    console.log("Main selectedSuggestion:", selectedSuggestion);
     this.setState({
       ...this.state,
       name: selectedSuggestion.name,
@@ -102,7 +105,11 @@ class Profile extends Component {
         <h2>Your games</h2>
         {user_data.thing_ids &&
           user_data.thing_ids.map(gameid => (
-            <Tile key={gameid} thing_id={gameid} />
+            <Tile
+              key={gameid}
+              thing_id={gameid}
+              owners={getOwnersForGame(gameid, this.state.localGames)}
+            />
           ))}
       </div>
     );

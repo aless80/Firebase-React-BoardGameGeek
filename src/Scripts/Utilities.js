@@ -1,5 +1,5 @@
 /**
- * Helper method to extract values from the parsed XML response
+ * extract values from the parsed XML response
  *
  * @param doc {object} - The parsed XMLresponse
  * @param elem {string} - An element from which one extracts information. Filter on <elem>.<attrOut>
@@ -32,7 +32,7 @@ export const extractValueFromElement = (
 };
 
 /**
- * Helper method to extract values from the parsed XML response
+ * extract values from the parsed XML response
  *
  * @param doc {object} - The parsed XMLresponse
  * @param elem {string} - An element from which one extracts information. Filter on <elem>.<attrOut>
@@ -64,7 +64,7 @@ export const extractValueFromElements = (
 };
 
 /**
- * Helper method to extract values from the parsed XML response
+ * extract values from the parsed XML response
  *
  * @param doc {object} - The parsed XMLresponse
  * @param elem {string} - An element from which one extracts information
@@ -95,7 +95,7 @@ export const extractTextContentFromElements = (
 };
 
 /**
- * Helper method to format numbers with leading zeroes
+ * format numbers with leading zeroes
  *
  * @param integer {integer} - An integer
  * @param [width] {integer} - How many numbers the returned value should have
@@ -110,7 +110,7 @@ export const leadingZeros = (integer, width = 6) => {
 };
 
 /**
- * Helper method to set the games information stored to the browser's session storage
+ * Set the games information stored to the browser's session storage
  *
  * @param gamesData {object} - Object with the games data
  * @param [key] {string} - Key in session storage for the games data
@@ -124,7 +124,7 @@ export const setSessionStorage = (gamesData, key = "localGames") => {
 };
 
 /**
- * Helper method to get the games information stored in the browser's session storage
+ * Get the games information stored in the browser's session storage
  *
  * @param integer {integer} - An integer
  * @param [key] {string} -
@@ -134,8 +134,20 @@ export const getSessionStorage = (key = "localGames") => {
   let stringifiedGames = sessionStorage.getItem(key);
   if (stringifiedGames === null) {
     console.log("No '" + key + "' key found in session storage");
-    return ''
+    return "";
   }
-  let ret = JSON.parse(stringifiedGames)
+  let ret = JSON.parse(stringifiedGames);
   return ret;
+};
+
+/**
+ * Get the owners for a game
+ *
+ * @param gameid {integer} - gameid from BGG
+ * @param [gamesdata] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
+ * @return {string[]} - Array of owners
+ */
+export const getOwnersForGame = (gameid, gamesdata) => {
+  let ind = gamesdata.thing_ids.indexOf(gameid);
+  return gamesdata.owners[ind];
 };
