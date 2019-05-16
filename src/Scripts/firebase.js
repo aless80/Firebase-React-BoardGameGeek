@@ -549,3 +549,23 @@ export const updateComment = (
       return;
     });
 };
+
+/**
+ * Helper method to get all Games from Firebase
+ *
+ * @callback [onAfterGetDocument] - Callback triggering after a successfull get
+ */
+export const getGames = (onAfterGetDocument = () => {}) => {
+  fire_games
+    .doc("owned")
+    .get()
+    .then(doc => {
+      var document = doc.data();
+      console.log("document:", document);
+      onAfterGetDocument(doc);
+    })
+    .catch(error => {
+      console.error("Error on getting all games: ", error);
+      return;
+    });
+};

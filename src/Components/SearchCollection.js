@@ -31,7 +31,7 @@ export default class SearchCollection extends Component {
 
   queryBGGCollection(value) {
     let queryUrl = buildURL(value, { stats: 1 });
-    const instance = axios.create({
+    axios.create({
       baseURL: queryUrl,
       timeout: 1000
     });
@@ -58,12 +58,15 @@ export default class SearchCollection extends Component {
 
   render() {
     let { doc, error } = this.state;
-    let url = buildURL(this.props.username, {});
+    //let url = buildURL(this.props.username, {});
     let obj = {};
     //var error = "";
     if (typeof doc !== "undefined") {
-      //Check if there is an error message
+      //Check if there is an error message TODO:
       let message = doc.getElementsByTagName("message");
+      if(message) {
+        console.error('error message present in response:',message)
+      }
       // Check total number of items
       let totalitems = doc
         .getElementsByTagName("items")[0]

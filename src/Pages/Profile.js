@@ -4,7 +4,11 @@ import SearchBoardGame from "../Components/SearchBoardGame";
 import SearchCollection from "../Components/SearchCollection";
 import ButtonsAddGame from "../Components/ButtonsAddGame";
 //import Deck from '../Components/Deck'
-import { /*getCurrentUser, getUserName,*/ getUser } from "../Scripts/firebase";
+import {
+  /*getCurrentUser, getUserName,*/ getUser,
+  getGames
+} from "../Scripts/firebase";
+import { getSessionStorage, setSessionStorage } from "../Scripts/Utilities";
 import "../Components/SearchBoardGame.css";
 
 class Profile extends Component {
@@ -12,8 +16,19 @@ class Profile extends Component {
     username: undefined,
     name: undefined,
     thing_id: undefined,
-    user_data: []
+    user_data: [],
+    localGames: getSessionStorage()
   };
+
+  componentDidMount() {
+    // Get games in session storage to state
+    if (!this.state.localGames) {
+      getGames(doc => {
+        this.setState({ ...this.state, localGames: doc.data() });
+        setSessionStorage(doc.data());
+      });
+    }
+  }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.user !== prevProps.user) {

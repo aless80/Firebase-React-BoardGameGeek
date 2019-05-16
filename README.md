@@ -18,7 +18,7 @@ Create an account in Firebase with a database. Set up a Database. Find the confi
 
 ## TODO
 * SearchCollection: getting Error on calling the API:Error: Network Error
-* refresh game list in profile when adding game
+* refresh game list in profile when adding game. cannot add more than one game in one session
 
 
 ## Data structure in Firebase

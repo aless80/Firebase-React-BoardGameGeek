@@ -139,30 +139,23 @@ export default class Tile extends Component {
         {doc === "undefined" && <div className="spinner" />}
         {typeof doc !== "undefined" && (
           <Container className="tile_container">
+            <Row className="tile_row">&nbsp;</Row>
             <Row className="tile_row">
               <Col sm="3">
                 <img
                   className="game_img"
                   src={obj.img_src}
                   alt="img"
-                  style={{ display:"inline-block", alignItems: "center" }}
+                  style={{ display: "inline-block", alignItems: "center" }}
                 />
               </Col>
-              <Col
-                sm="6"
-                style={{
-                  borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderRight: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
-                }}
-              >
+              <Col sm="6">
                 <Container>
                   <Row>
                     <Col sm="3">
-                      <div className="hex">
+                      <div className="hexagon">
                         <div
-                          class="rating"
+                          className="rating"
                           title={
                             "Rating: " +
                             parseFloat(obj.average).toFixed(1) +
@@ -178,11 +171,11 @@ export default class Tile extends Component {
                       </div>
                     </Col>
                     <Col sm="7">
-                      <h3>{obj.gameName + " (" + obj.yearpublished + ")"}</h3>
+                      <h3 className="vcenter">{obj.gameName + " (" + obj.yearpublished + ")"}</h3>
                     </Col>
                     <Col sm="1">
                       <a href={url} target="_blank" rel="noopener noreferrer">
-                        <h3>Link</h3>
+                        <h3 className="vcenter">Link</h3>
                       </a>
                     </Col>
                     <Col sm="1" />
