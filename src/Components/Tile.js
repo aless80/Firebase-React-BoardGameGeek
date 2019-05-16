@@ -150,7 +150,6 @@ export default class Tile extends Component {
                 />
               </Col>
               <Col sm={this.owners ? "6" : "9"}>
-                ---{this.owners}---{this.owners ? "yes" : "no"}
                 <Container>
                   <Row>
                     <Col sm="3">

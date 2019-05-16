@@ -58,7 +58,7 @@ class Profile extends Component {
     return (
       <div className="panel-body">
         <br />
-        <h1>Welcome {username}!</h1>
+        {username && <h1>Welcome {username}!</h1>}
         <br />
         <h2>Search a game</h2>
         <br />
@@ -103,6 +103,9 @@ class Profile extends Component {
         <br />
 
         <h2>Your games</h2>
+        {user_data.thing_ids && !user_data.thing_ids.length && (
+          <p>No games found for you in this app's storage</p>
+        )}
         {user_data.thing_ids &&
           user_data.thing_ids.map(gameid => (
             <Tile
