@@ -37,20 +37,37 @@ class Main extends Component {
 
   render() {
     let { thing_id, name } = this.state;
+    const numItemsPerRow = 3;
+    const spaceBetweenItems = 20;
+    const containerStyle = {
+      display: "flex",
+      flexWrap: "wrap",
+      margin: `-${spaceBetweenItems * 0.5}px`
+    };
+    const itemStyle = {
+      display: "block",
+      flex: "none",
+      width: `${100 / numItemsPerRow}%`,
+      boxSizing: "border-box",
+      padding: `${spaceBetweenItems * 0.5}px`
+    };
     return (
       <div>
-        <div className="panel-body">
+        <div id="panel-body" className="panel-body">
           <br />
           <h2>The group's games</h2>
-          {this.state.localGames &&
-            this.state.localGames.thing_ids.map(gameid => (
-              <Tile
-                key={gameid}
-                thing_id={gameid}
-                owners={getOwnersForGame(gameid, this.state.localGames)}
-              />
-            ))}
-
+          <div style={containerStyle}>
+            {this.state.localGames &&
+              this.state.localGames.thing_ids.map(gameid => (
+                <div style={itemStyle}>
+                  <Tile
+                    key={gameid}
+                    thing_id={gameid}
+                    owners={getOwnersForGame(gameid, this.state.localGames)}
+                  />
+                </div>
+              ))}
+          </div>
           <br />
           <h2>Search a game</h2>
           <br />

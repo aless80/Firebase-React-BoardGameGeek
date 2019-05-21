@@ -17,9 +17,11 @@ Create an account in Firebase with a database. Set up a Database. Find the confi
 <!--
 
 ## TODO
-* SearchCollection: getting Error on calling the API:Error: Network Error
+check https://brettspill.nærd.no/
+* SearchCollection: got Error on calling the API:Error: Network Error
+* SearchCollection: allow to add all games
 * refresh game list in profile when adding game. cannot add more than one game in one session
-
+* Owners in Tile and Card can become long list
 
 ## Data structure in Firebase
 ```

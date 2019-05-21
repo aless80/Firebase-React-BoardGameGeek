@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Tile from "../Components/Tile";
+import Card from "../Components/Card";
 import SearchBoardGame from "../Components/SearchBoardGame";
 import SearchCollection from "../Components/SearchCollection";
 import ButtonsAddGame from "../Components/ButtonsAddGame";
@@ -85,7 +85,7 @@ class Profile extends Component {
           />
           {/*thing_id && (
             <div>
-              <Tile thing_id={thing_id} />
+              <Card thing_id={thing_id} />
               <ButtonsAddGame thing_id={thing_id} name={name} />
             </div>
           )*/}
@@ -95,7 +95,7 @@ class Profile extends Component {
         <div className="suggestedBoardGame">
           {thing_id && (
             <div>
-              <Tile thing_id={thing_id} />
+              <Card thing_id={thing_id} />
               <ButtonsAddGame thing_id={thing_id} name={name} />
             </div>
           )}
@@ -108,7 +108,7 @@ class Profile extends Component {
         )}
         {user_data.thing_ids &&
           user_data.thing_ids.map(gameid => (
-            <Tile
+            <Card
               key={gameid}
               thing_id={gameid}
               owners={getOwnersForGame(gameid, this.state.localGames)}
