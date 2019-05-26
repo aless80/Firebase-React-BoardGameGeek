@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Card from "../Components/Card";
 import SearchBoardGame from "../Components/SearchBoardGame";
 import SearchCollection from "../Components/SearchCollection";
-import ButtonsAddGame from "../Components/ButtonsAddGame";
+import ButtonAddGames from "../Components/ButtonAddGames";
 //import Deck from '../Components/Deck'
 import {
   /*getCurrentUser, getUserName,*/ getUser,
@@ -86,7 +86,7 @@ class Profile extends Component {
           {/*thing_id && (
             <div>
               <Card thing_id={thing_id} />
-              <ButtonsAddGame thing_id={thing_id} name={name} />
+              <ButtonAddGames thing_id={thing_id} name={name} />
             </div>
           )*/}
         </div>
@@ -96,7 +96,7 @@ class Profile extends Component {
           {thing_id && (
             <div>
               <Card thing_id={thing_id} />
-              <ButtonsAddGame thing_id={thing_id} name={name} />
+              <ButtonAddGames thing_id={thing_id} name={name} />
             </div>
           )}
         </div>

@@ -141,7 +141,7 @@ export default class Tile extends Component {
           <Container className="tile_container">
             <Row>&nbsp;</Row>
             <Row className="">
-              <Col sm="4" >
+              <Col sm="4">
                 <img
                   className="game_img"
                   src={obj.img_src}
@@ -150,8 +150,10 @@ export default class Tile extends Component {
                 />
               </Col>
               <Col sm={this.owners ? "6" : "8"}>
-                <h3 className="vcenter">
-                  {obj.gameName + " (" + obj.yearpublished + ")"}
+                <h3 className="vcenter game_info">
+                  <div className="game_name">{obj.gameName + " "}
+                    {"(" + obj.yearpublished + ")"}
+                  </div>
                 </h3>
               </Col>
             </Row>

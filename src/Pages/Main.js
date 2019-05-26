@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Tile from "../Components/Tile";
 import SearchBoardGame from "../Components/SearchBoardGame";
-import ButtonsAddGame from "../Components/ButtonsAddGame";
+import ButtonAddGames from "../Components/ButtonAddGames";
 import { getGames } from "../Scripts/firebase";
 import {
   getSessionStorage,
@@ -52,47 +52,45 @@ class Main extends Component {
       padding: `${spaceBetweenItems * 0.5}px`
     };
     return (
-      <div>
-        <div id="panel-body" className="panel-body">
-          <br />
-          <h2>The group's games</h2>
-          <div style={containerStyle}>
-            {this.state.localGames &&
-              this.state.localGames.thing_ids.map(gameid => (
-                <div style={itemStyle}>
-                  <Tile
-                    key={gameid}
-                    thing_id={gameid}
-                    owners={getOwnersForGame(gameid, this.state.localGames)}
-                  />
-                </div>
-              ))}
-          </div>
-          <br />
-          <h2>Search a game</h2>
-          <br />
-          <div className="searchBoardGame">
-            <SearchBoardGame
-              exact={1}
-              boardgame={1}
-              boardgameaccessory={0}
-              boardgameexpansion={0}
-              passSelection={selectedSuggestion =>
-                this.setSelectedGame(selectedSuggestion)
-              }
-            />
-          </div>
-          <br />
-
-          <div className="suggestedBoardGame">
-            {thing_id && (
-              <div>
-                <Tile thing_id={thing_id} />
-                <br />
-                <ButtonsAddGame thing_id={thing_id} name={name} />
+      <div className="panel-body">
+        <br />
+        <h2>The group's games</h2>
+        <div style={containerStyle}>
+          {this.state.localGames &&
+            this.state.localGames.thing_ids.map(gameid => (
+              <div style={itemStyle}>
+                <Tile
+                  key={gameid}
+                  thing_id={gameid}
+                  owners={getOwnersForGame(gameid, this.state.localGames)}
+                />
               </div>
-            )}
-          </div>
+            ))}
+        </div>
+        <br />
+        <h2>Search a game</h2>
+        <br />
+        <div className="searchBoardGame">
+          <SearchBoardGame
+            exact={1}
+            boardgame={1}
+            boardgameaccessory={0}
+            boardgameexpansion={0}
+            passSelection={selectedSuggestion =>
+              this.setSelectedGame(selectedSuggestion)
+            }
+          />
+        </div>
+        <br />
+
+        <div className="suggestedBoardGame">
+          {thing_id && (
+            <div>
+              <Tile thing_id={thing_id} />
+              <br />
+              <ButtonAddGames thing_id={thing_id} name={name} />
+            </div>
+          )}
         </div>
       </div>
     );

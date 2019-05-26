@@ -6,7 +6,7 @@ import {
 } from "../Scripts/firebase";
 import { pushGamesToUser, pushGames } from "../Scripts/firebase";
 
-export default class ButtonsAddGame extends Component {
+export default class ButtonAddGames extends Component {
   onSubmit = e => {
     // Get the game
     //const { name, thing_id } = this.state;

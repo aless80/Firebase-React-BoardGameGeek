@@ -6,7 +6,7 @@ import Main from "./Pages/Main";
 import Profile from "./Pages/Profile";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-
+import "./App.css"
 // Secure routes
 function AuthenticatedRoute({
   component: Component,

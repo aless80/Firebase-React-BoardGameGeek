@@ -21,13 +21,57 @@
   height: auto;
   align-items: center;
 }
+.card_container .owners {
+  overflow: auto;
+  max-height: 325px;
+}
 .tile_container .game_img {
+  color: #ffd866;
   position: absolute;
   max-height: 100%;
   max-width: 95%;
   width: auto;
   height: auto;
   align-items: center;
+  margin: 0 0;
+}
+.tile_container .game_data {
+  color: #ffd866;
+  margin-top: 0.6em;
+  font-size: 14px;
+  line-height: 10px;
+  font-weight: 400;
+  text-align: center;
+}
+.game_info {
+  display: flex;
+  font-weight: 500;
+  line-height: 1.2em;
+}
+.game_name {
+  bottom: 0em;
+  font-size: 1em;
+  line-height: 1.2em;
+  min-height: 3.5em;
+}
+.vcenter {
+  display: inline-block;
+  vertical-align: middle;
+}
+.rating {
+  height: 100%;
+  width: 100%;
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  /* align horizontal */
+  align-items: center;
+  /* align vertical */
+  z-index: 100;
 }
 
 .hexagon {
@@ -54,30 +98,6 @@
   width: 0;
   border-top: 23.1px solid #1d8acd;
 }
-
-.rating {
-  height: 100%;
-  width: 100%;
-  color: #fff;
-  font-size: 24px;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  /* align horizontal */
-  align-items: center;
-  /* align vertical */
-  z-index: 100;
-}
-.vcenter {
-  display: inline-block;
-  vertical-align: middle;
-  padding: 20px 0;
-}
-.game_data {
-  color: #ffd866;
-}
 .centered {
   text-align: center;
 }
@@ -87,26 +107,3 @@
 .borderRight {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-.opaque {
-  max-height: 171px;
-  width: 100%;
-  opacity: 0.4;
-  -webkit-filter: blur(1px);
-  filter: blur(1px);
-}
-.tile_container .game_data {
-  margin-top: 0.6em;
-  font-size: 14px;
-  /*font-size: 1.5em;*/
-  line-height: 10px;
-  font-weight: 400;
-  text-align: center;
-}
-/*.bkg_img {
-  display: inline-block;
-  align-items: center;
-  background-position: "center";
-  background-size: 100% 100%;
-  background-repeat: "no-repeat";
-}*/

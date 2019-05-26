@@ -246,11 +246,13 @@ export default class Card extends Component {
                   <p className="game_data">
                     <b>Owners</b>
                   </p>
-                  {this.owners.split(",").map((owner, ind) => (
-                    <p className="game_data" key={ind}>
-                      {owner}
-                    </p>
-                  ))}
+                  <div className="owners">
+                    {this.owners.split(",").map((owner, ind) => (
+                      <p className="game_data" key={ind}>
+                        {owner}
+                      </p>
+                    ))}
+                  </div>
                 </Col>
               )}
             </Row>
