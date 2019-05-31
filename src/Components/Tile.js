@@ -37,8 +37,7 @@ export default class Tile extends Component {
     axios
       .get(queryUrl)
       .then(xml => {
-        //console.log("xml:", xml);
-        console.log("Tile:", queryUrl);
+        //console.log("Tile:", queryUrl);
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
         this.setState({ ...this.state, doc });
       })
@@ -62,7 +61,7 @@ export default class Tile extends Component {
 
   render() {
     let { doc } = this.state;
-    let url = buildURL(this.props.thing_id, { stats: 1 });
+    //let url = buildURL(this.props.thing_id, { stats: 1 });
     let obj = {};
     if (typeof doc !== "undefined") {
       obj["gameName"] = doc

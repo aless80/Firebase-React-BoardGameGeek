@@ -1,5 +1,5 @@
 import firebase from "../Firebase";
-
+import { addGameToUserData, addGameToGamesData } from "../Scripts/Utilities";
 /**
  * Cloud Storage
  *
@@ -303,7 +303,7 @@ export const setGameReference = (
  * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
  *
  */
-export const pushGames = (
+export const pushGamesToGamesCollection = (
   category,
   thing_ids,
   names,
@@ -316,7 +316,7 @@ export const pushGames = (
     .get()
     .then(doc => {
       var document = doc.data();
-      if (!document) {
+      /*if (!document) {
         document = { thing_ids: [], names: [], owners: [] };
       }
       thing_ids.forEach((thing_id, ind) => {
@@ -338,7 +338,16 @@ export const pushGames = (
             document["owners"][thing_id_ind] += owner;
           }
         }
-      });
+      });*/
+      const owner = getUserName();
+      [document, edited] = addGameToGamesData(
+        document,
+        thing_ids,
+        names,
+        Array(thing_ids.length).fill(owner)
+      );
+      console.log("pushGamesToGamesCollection - document, edited:", document,edited);
+      
       // Save the Game document to Firebase only if it was modified
       if (edited) {
         //Store last edit info
@@ -371,10 +380,10 @@ export const pushGames = (
  * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
  *
  */
-export const pushGamesToUser = (
-  categories,
+export const pushGamesToUsersCollection = (
   thing_ids,
   names,
+  categories,
   data,
   onSetDocument = () => {}
 ) => {
@@ -385,6 +394,15 @@ export const pushGamesToUser = (
     .get()
     .then(doc => {
       var document = doc.data();
+
+      [document, edited] = addGameToUserData(
+        document,
+        thing_ids,
+        names,
+        categories
+      );
+      console.log('pushGamesToUsersCollection - document, edited:', [document, edited])
+      
       if (!document) {
         document = { thing_ids: [], names: [], categories: [] };
       }
@@ -426,52 +444,6 @@ export const pushGamesToUser = (
           "The User document already contained the user's boardgame and did not need to be updated"
         );
       }
-    })
-    .catch(error => {
-      console.error("Error on getting User document: ", error);
-    });
-};
-
-/**
- * Append a game to a User document
- *
- * @param {string} username - The username
- * @param {string[]} thing_ids - Array with game IDs from BGG
- * @param {string[]} names - Array with game names from BGG
- * @param {*} data - Optional data for the User document
- * @callback [onSetDocument] - Callback triggering on a successful update of the Comment document
- *
- */
-export const pushGamesToUserOLD = (
-  username,
-  thing_id,
-  name,
-  data,
-  onSetDocument = () => {}
-) => {
-  const fire_user = getUserReference(username);
-  fire_user
-    .get()
-    .then(doc => {
-      var document = doc.data();
-      if (!document) {
-        document = { thing_id: [], name: [] };
-      }
-      document = { ...document, ...data };
-      if (document["thing_id"].indexOf(thing_id) === -1) {
-        return console.error(
-          "Game already present in User document with username",
-          username
-        );
-      }
-      document["thing_id"].push(thing_id);
-      document["name"].push(name);
-      fire_user
-        .set(document)
-        .then(onSetDocument())
-        .catch(error => {
-          console.error("Error on setting User document: ", error);
-        });
     })
     .catch(error => {
       console.error("Error on getting User document: ", error);

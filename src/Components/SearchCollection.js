@@ -4,7 +4,7 @@ import {
   extractValueFromElements,
   extractTextContentFromElements
 } from "../Scripts/Utilities";
-import Tile from "../Components/Tile";
+//import Tile from "../Components/Tile";
 //import { Container, ListGroup, ListGroupItem } from "reactstrap";
 //import { CSSTransition, TransitionGroup } from "react-transition-group";
 
@@ -14,7 +14,7 @@ import Tile from "../Components/Tile";
 const buildURL = (value, params) => {
   /*BGG: Note that the default (or using subtype=boardgame) returns both boardgame and boardgameexpansion's in your collection... but incorrectly gives subtype=boardgame for the expansions. Workaround is to use excludesubtype=boardgameexpansion and make a 2nd call asking for subtype=boardgameexpansion*/
   //let stats = params.;
-  let queryUrl = `https://www.boardgamegeek.com/xmlapi2/collection?username=${value}&subtype=boardgame&own=1`; 
+  let queryUrl = `https://www.boardgamegeek.com/xmlapi2/collection?username=${value}&subtype=boardgame&own=1`;
   //NB: with &stats=1 you get some more info: minplayers maxplayers minplaytime maxplaytime
   console.log("queryUrl:", queryUrl);
   return queryUrl;
@@ -22,10 +22,11 @@ const buildURL = (value, params) => {
 
 export default class SearchCollection extends Component {
   state = {
-    username: this.props.username, //NiceGuyMike
+    //username: this.props.username, //NiceGuyMike
     //xml: undefined,
     doc: undefined,
-    error: ""
+    //error: "",
+    //thing_ids: []
   };
   collection = "";
 
@@ -39,11 +40,12 @@ export default class SearchCollection extends Component {
       .get(queryUrl)
       .then(xml => {
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
-        this.setState({ ...this.state, doc });
+        this.processDoc(doc);
       })
       .catch(err => {
         let error = "Error on calling the API:" + err;
-        this.setState({ ...this.state, error });
+        console.error('error:', error)
+        //this.setState({ ...this.state, error });
       });
   }
 
@@ -56,43 +58,40 @@ export default class SearchCollection extends Component {
     }
   }
 
-  render() {
-    let { doc, error } = this.state;
-    //let url = buildURL(this.props.username, {});
-    let obj = {};
-    //var error = "";
+  processDoc(doc) {
     if (typeof doc !== "undefined") {
-      //Check if there is an error message TODO:
+      //Check if there is an error message
       let message = doc.getElementsByTagName("message");
-      if(message) {
-        console.error('error message present in response:',message)
-      }
-      // Check total number of items
-      let totalitems = doc
-        .getElementsByTagName("items")[0]
-        .getAttribute("totalitems");
-      if (totalitems === "0") {
-        error = `Zero results for ${this.props.username}'s collection`;
-        console.log("error:", error);
-        //this.setState({ ...this.state, error });
-      } else {
-        // Link with game characteristics
-        // Example: <link type="boardgamecategory" id="1026" value="Negotiation"/>
-        obj["thing_ids"] = extractValueFromElements(doc, "item", "objectid");
-        obj["subtypes"] = extractValueFromElements(doc, "subtype", "objectid");
-        obj["names"] = extractTextContentFromElements(doc, "name");
-        obj["years"] = extractTextContentFromElements(doc, "yearpublished");
-        obj["images"] = extractTextContentFromElements(doc, "image");
-        console.log("obj:", obj);
+      if (message.length) {
+        console.error("Error message present in response:", message);
       }
     }
+    let thing_ids = [];
+    let names = [];
+    // Check total number of items
+    let totalitems = doc
+      .getElementsByTagName("items")[0]
+      .getAttribute("totalitems");
+    if (totalitems === "0") {
+      console.log(`Zero results for ${this.props.username}'s collection`);
+    } else {
+      // Link with game characteristics
+      // Example: <link type="boardgamecategory" id="1026" value="Negotiation"/>
+      thing_ids = extractValueFromElements(doc, "item", "objectid");
+      names = extractTextContentFromElements(doc, "name");
+    }
+    this.props.passSelection(thing_ids, names);
+  }
+
+  render() {
+    let { doc } = this.state;
     return (
       <div>
         {doc === "undefined" && <div className="spinner" />}
         <div>
           <input
             type="text"
-            className="react-autosuggest__input" 
+            className="react-autosuggest__input"
             onChange={e => this.onchange(e.currentTarget.value)}
             placeholder="Type your BoardGameGeek username"
           />
@@ -104,15 +103,6 @@ export default class SearchCollection extends Component {
           >
             Submit
           </button>
-          {typeof doc !== "undefined" && (
-            <div className="collResults">
-              {this.state.error !== "" && <h3>{this.state.error}</h3>}
-              {obj.thing_ids &&
-                obj.thing_ids.map(gameid => (
-                  <Tile key={gameid} thing_id={gameid} />
-                ))}
-            </div>
-          )}
         </div>
       </div>
     );

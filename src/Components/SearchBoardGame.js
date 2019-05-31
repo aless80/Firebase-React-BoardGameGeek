@@ -54,7 +54,7 @@ const getSuggestionValue = suggestion => {
 
 // Render the suggestion
 const renderSuggestion = suggestion => {
-  return <span>{suggestion.name}</span>;
+  return <span>{suggestion.name + " (" + suggestion.year + ")"}</span>;
 };
 
 class SearchBoardGame extends React.Component {
@@ -103,8 +103,8 @@ class SearchBoardGame extends React.Component {
       .then(xml => {
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
         let suggestions = buildSuggestions(doc);
-        this.setState({ ...this.state, suggestions: suggestions });
-        console.log(queryUrl);
+        this.setState({ ...this.state, suggestions });
+        console.log("SearchBoardGame:", queryUrl);
       })
       .catch(err => console.error("err:", err));
   }
@@ -128,9 +128,17 @@ class SearchBoardGame extends React.Component {
 
   // User clicks on a suggestion. Pass selection to parent
   onSuggestionSelected = (event, { suggestion }) => {
-    this.props.passSelection(suggestion);
+    this.props.passGameInfo(suggestion.id, suggestion.name);
   };
 
+  setSelectedGame(selectedSuggestion) {
+    //console.log("Main selectedSuggestion:", selectedSuggestion);
+    this.setState({
+      ...this.state,
+      name: selectedSuggestion.name,
+      thing_id: selectedSuggestion.id
+    });
+  }
   render() {
     const {
       value,

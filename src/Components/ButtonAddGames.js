@@ -4,7 +4,16 @@ import {
   getProfilePicUrl,
   getServerTimestamp
 } from "../Scripts/firebase";
-import { pushGamesToUser, pushGames } from "../Scripts/firebase";
+import {
+  pushGamesToUsersCollection,
+  pushGamesToGamesCollection
+} from "../Scripts/firebase";
+import {
+  getSessionStorage,
+  setSessionStorage,
+  addGameToUserData,
+  addGameToGamesData
+} from "../Scripts/Utilities";
 
 export default class ButtonAddGames extends Component {
   onSubmit = e => {
@@ -22,40 +31,53 @@ export default class ButtonAddGames extends Component {
     var owner = getCurrentUser().displayName;
     var profilePicUrl = getProfilePicUrl();
     const timestamp = getServerTimestamp();
-    /*// Create a Game document reference with thing_id as ID
-    let fire_game = getGameReference(leadingZeros(thing_id));
-    const data_game = {
-      owner: owner,
-      profilePicUrl: profilePicUrl,
-      status: "owned",
-      name: name,
-      thing_id: thing_id,
-      timestamp: timestamp
+    // Game data to push to Firebase, Games collection
+    const data_games = {
+      lastEditorPicUrl: profilePicUrl,
+      lastEditor: owner,
+      lastEdit: timestamp
     };
-    setGameReference(fire_game, data_game, onSuccessfullySetDocument);
-    */
+    // Callback triggered after saving to Firebase, Games collection
     const onSuccessfullySetDocument = () => {
-      console.log("Saved new Game document");
+      console.log("Saved new document to Game collection");
       // Get document with all comments, push new comment
       var data_user = {
         profilePicUrl: getProfilePicUrl(),
         lastEdit: timestamp,
         timestamp: timestamp
       };
-      pushGamesToUser(
-        ["owned"],
+      // Save in Firebase, Users collection
+      pushGamesToUsersCollection(
         [thing_id],
         [name],
+        ["owned"],
         data_user,
-        console.log("Saved new boardgame in User document")
+        () => {
+          console.log("Saved new document in Users collection");
+          let updated;
+          let localUser = getSessionStorage("localUser");
+          [localUser, updated] = addGameToUserData(
+            localUser,
+            [thing_id],
+            [name],
+            ["owned"]
+          );
+          setSessionStorage(localUser, "localUser");
+          // Save games to SessionStorage, to save calls to Firebase
+          let localGames = getSessionStorage("localGames");
+          [localGames, updated] = addGameToGamesData(
+            localGames,
+            [thing_id],
+            [name],
+            [owner]
+          );
+          setSessionStorage(localGames, "localGames");
+          //Send thing_ids added to parent
+          this.props.onSubmit([thing_id], [name]);
+        }
       );
     };
-    const data_games = {
-      lastEditorPicUrl: profilePicUrl,
-      lastEditor: owner,
-      lastEdit: timestamp
-    };
-    pushGames(
+    pushGamesToGamesCollection(
       "owned",
       [thing_id],
       [name],

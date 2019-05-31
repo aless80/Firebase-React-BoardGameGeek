@@ -21,6 +21,12 @@ Check https://brettspill.nærd.no/
 * SearchCollection: got Error on calling the API:Error: Network Error
 * SearchCollection: allow to add all games
 * refresh game list in profile when adding game. cannot add more than one game in one session
+* sort suggested games by relevance and then year
+* delete button
+* Tile text can be long (6 lines)
+* bug: add the first game and get "".thing_ids cannot be set. I think localstorage is ""
+* Create UserData and GameData classes?
+* bug? qwerty game failed
 
 ## Data structure in Firebase
 ```

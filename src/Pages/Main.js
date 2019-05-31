@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Card from "../Components/Card";
 import Tile from "../Components/Tile";
 import SearchBoardGame from "../Components/SearchBoardGame";
 import ButtonAddGames from "../Components/ButtonAddGames";
@@ -11,8 +12,8 @@ import {
 
 class Main extends Component {
   state = {
-    name: undefined,
-    thing_id: undefined,
+    game_names: undefined,
+    thing_ids: undefined,
     localGames: getSessionStorage()
   };
 
@@ -26,17 +27,24 @@ class Main extends Component {
     }
   }
 
-  setSelectedGame(selectedSuggestion) {
-    console.log("Main selectedSuggestion:", selectedSuggestion);
+  /*componentDidUpdate(prevProps, prevState, snapshot) {
+    // Check when SessionStorage in state changes
+    if (this.state.localGames.thing_ids !== prevState.localGames.thing_ids) {
+      console.log('if')
+    }
+  }*/
+
+  setGameInfo(thing_ids, game_names) {
     this.setState({
       ...this.state,
-      name: selectedSuggestion.name,
-      thing_id: selectedSuggestion.id
+      thing_ids,
+      game_names,
+      localGames: getSessionStorage()
     });
   }
 
   render() {
-    let { thing_id, name } = this.state;
+    let { thing_ids, game_names } = this.state;
     const numItemsPerRow = 3;
     const spaceBetweenItems = 20;
     const containerStyle = {
@@ -58,7 +66,7 @@ class Main extends Component {
         <div style={containerStyle}>
           {this.state.localGames &&
             this.state.localGames.thing_ids.map(gameid => (
-              <div style={itemStyle}>
+              <div key={gameid} style={itemStyle}>
                 <Tile
                   key={gameid}
                   thing_id={gameid}
@@ -68,27 +76,34 @@ class Main extends Component {
             ))}
         </div>
         <br />
+
         <h2>Search a game</h2>
         <br />
         <div className="searchBoardGame">
           <SearchBoardGame
-            exact={1}
+            exact={0}
             boardgame={1}
             boardgameaccessory={0}
             boardgameexpansion={0}
-            passSelection={selectedSuggestion =>
-              this.setSelectedGame(selectedSuggestion)
-            }
+            passGameInfo={(game_id, game_name) => {
+              this.setGameInfo([game_id], [game_name]);
+            }}
           />
         </div>
         <br />
 
         <div className="suggestedBoardGame">
-          {thing_id && (
+          {thing_ids && thing_ids.length > 0 && (
             <div>
-              <Tile thing_id={thing_id} />
+              <Card thing_id={thing_ids[0]} />
               <br />
-              <ButtonAddGames thing_id={thing_id} name={name} />
+              <ButtonAddGames
+                thing_id={thing_ids[0]}
+                name={game_names[0]}
+                onSubmit={(game_ids, game_names) => {
+                  this.setGameInfo([], []);
+                }}
+              />
             </div>
           )}
         </div>
