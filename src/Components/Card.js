@@ -279,9 +279,9 @@ export default class Card extends Component {
                           ") Min"
                         }
                       >
-                        <b>{obj.playingtime + " Min"}</b>
+                        <b>{obj.playingtime}</b>
                       </p>
-                      <p className="game_data centered">Play time</p>
+                      <p className="game_data centered">Play time (mins)</p>
                     </Col>
                     <Col className="borderTop">
                       <p className="game_data centered">

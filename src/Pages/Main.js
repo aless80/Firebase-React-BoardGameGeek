@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import Card from "../Components/Card";
 import Tile from "../Components/Tile";
+/*import Card from "../Components/Card";
 import SearchBoardGame from "../Components/SearchBoardGame";
 import ButtonAddGames from "../Components/ButtonAddGames";
+*/
 import { getGames } from "../Scripts/firebase";
 import {
   getSessionStorage,
@@ -44,7 +45,7 @@ class Main extends Component {
   }
 
   render() {
-    let { thing_ids, game_names } = this.state;
+    //let { thing_ids, game_names } = this.state;
     const numItemsPerRow = 3;
     const spaceBetweenItems = 20;
     const containerStyle = {
@@ -77,6 +78,7 @@ class Main extends Component {
         </div>
         <br />
 
+        {/*
         <h2>Search a game</h2>
         <br />
         <div className="searchBoardGame">
@@ -92,7 +94,7 @@ class Main extends Component {
         </div>
         <br />
 
-        <div className="suggestedBoardGame">
+        <div className="searchedBoardGame">
           {thing_ids && thing_ids.length > 0 && (
             <div>
               <Card
@@ -111,6 +113,7 @@ class Main extends Component {
             </div>
           )}
         </div>
+        */}
       </div>
     );
   }

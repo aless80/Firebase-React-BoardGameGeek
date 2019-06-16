@@ -189,7 +189,7 @@ class Profile extends Component {
           </TabPane>
         </TabContent>
 
-        <div className="suggestedBoardGame">
+        <div className="searchedBoardGame">
           {thing_ids &&
             thing_ids.length > 0 &&
             thing_ids.map((game_id, ind) => (
