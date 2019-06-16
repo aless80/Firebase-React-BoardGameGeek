@@ -5,6 +5,14 @@ import { extractValueFromElements } from "../Scripts/Utilities";
 //import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { Container, Row, Col } from "reactstrap";
 import "./Tile.css";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
+import DeleteIcon from "@material-ui/icons/Delete";
+/*import Icon from "@material-ui/core/Icon";
+import NavigationIcon from "@material-ui/icons/Navigation";
+import BottomNavigation from "@material-ui/core/BottomNavigation";
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+*/
 // Construct the URL for API calls
 // value is the thing id
 // params (required): parameters object including stats
@@ -17,7 +25,9 @@ const buildURL = (value, params) => {
 export default class Card extends Component {
   state = {
     thing_id: this.props.thing_id,
-    doc: undefined
+    doc: undefined,
+    addGame: this.props.addGame,
+    removeGame: this.props.removeGame
   };
   owners = this.props.owners;
 
@@ -25,6 +35,16 @@ export default class Card extends Component {
     //Always compare props
     if (this.props.thing_id !== prevProps.thing_id) {
       this.queryBGGThing(this.props.thing_id);
+    }
+    if (
+      this.props.addGame !== prevProps.addGame ||
+      this.props.removeGame !== prevProps.removeGame
+    ) {
+      this.setState({
+        ...this.state,
+        addGame: this.props.addGame,
+        removeGame: this.props.removeGame
+      });
     }
   }
 
@@ -37,7 +57,6 @@ export default class Card extends Component {
     axios
       .get(queryUrl)
       .then(xml => {
-        //console.log("xml:", xml);
         console.log("Card:", queryUrl);
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
         this.setState({ ...this.state, doc });
@@ -142,12 +161,63 @@ export default class Card extends Component {
             <Row className="card_row">&nbsp;</Row>
             <Row className="card_row">
               <Col sm="3">
-                <img
-                  className="game_img"
-                  src={obj.img_src}
-                  alt="img"
-                  style={{ display: "inline-block", alignItems: "center" }}
-                />
+                <div className="img_container">
+                  <img
+                    className="game_img"
+                    src={obj.img_src}
+                    alt="img"
+                    style={{ display: "inline-block", alignItems: "center" }}
+                  />
+                  <div className="game_actions">
+                    {this.state.addGame && (
+                      <Fab
+                        variant="extended"
+                        size="small"
+                        color="primary"
+                        aria-label="Add"
+                        className="fab_icon"
+                        onClick={() => {
+                          console.log("onClick add");
+                        }}
+                      >
+                        <AddIcon className="" />
+                        Add
+                      </Fab>
+                    )}
+                    {this.state.removeGame && (
+                      <Fab
+                        variant="extended"
+                        size="small"
+                        color="secondary"
+                        aria-label="Add"
+                        className="fab_icon"
+                        onClick={() => {
+                          console.log("onClick rm");
+                        }}
+                      >
+                        <DeleteIcon className="" disabled />
+                        Remove
+                      </Fab>
+                    )}
+                  </div>
+                </div>
+
+                {/*<br />
+                <BottomNavigation
+                  value={value}
+                  onChange={(event, newValue) => {
+                    setValue(newValue);
+                  }}
+                  showLabels
+                  className=""
+                >
+                  <BottomNavigationAction label="Add" icon={<AddIcon />} />
+                  <BottomNavigationAction
+                    label="Remove"
+                    icon={<DeleteIcon />}
+                  />
+                  <BottomNavigationAction label="Something" icon={<Icon />} />
+                </BottomNavigation>*/}
               </Col>
               <Col sm={this.owners ? "6" : "9"}>
                 <Container>

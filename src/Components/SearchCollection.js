@@ -4,16 +4,12 @@ import {
   extractValueFromElements,
   extractTextContentFromElements
 } from "../Scripts/Utilities";
-//import Tile from "../Components/Tile";
-//import { Container, ListGroup, ListGroupItem } from "reactstrap";
-//import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 // Construct the URL for API calls
 // value is the username
 // params (required): parameters object including stats
 const buildURL = (value, params) => {
   /*BGG: Note that the default (or using subtype=boardgame) returns both boardgame and boardgameexpansion's in your collection... but incorrectly gives subtype=boardgame for the expansions. Workaround is to use excludesubtype=boardgameexpansion and make a 2nd call asking for subtype=boardgameexpansion*/
-  //let stats = params.;
   let queryUrl = `https://www.boardgamegeek.com/xmlapi2/collection?username=${value}&subtype=boardgame&own=1`;
   //NB: with &stats=1 you get some more info: minplayers maxplayers minplaytime maxplaytime
   console.log("queryUrl:", queryUrl);
@@ -22,11 +18,7 @@ const buildURL = (value, params) => {
 
 export default class SearchCollection extends Component {
   state = {
-    //username: this.props.username, //NiceGuyMike
-    //xml: undefined,
-    doc: undefined,
-    //error: "",
-    //thing_ids: []
+    error: ""
   };
   collection = "";
 
@@ -40,12 +32,13 @@ export default class SearchCollection extends Component {
       .get(queryUrl)
       .then(xml => {
         let doc = new DOMParser().parseFromString(xml.data, "text/xml");
+        this.setState({ ...this.state, error: "" });
         this.processDoc(doc);
       })
       .catch(err => {
         let error = "Error on calling the API:" + err;
-        console.error('error:', error)
-        //this.setState({ ...this.state, error });
+        console.error("error:", error);
+        this.setState({ ...this.state, error });
       });
   }
 
@@ -103,7 +96,18 @@ export default class SearchCollection extends Component {
           >
             Submit
           </button>
+          {this.state.error && (
+            <div>
+              <p>
+                <strong>
+                  Error on calling the collection API. Please try again.{" "}
+                </strong>
+              </p>
+              <p>{this.state.error}</p>
+            </div>
+          )}
         </div>
+        <br />
       </div>
     );
   }

@@ -152,11 +152,26 @@ export const getSessionStorage = (key = "localGames") => {
  *
  * @param gameid {integer} - gameid from BGG
  * @param [gamesdata] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
- * @return {string[]} - Array of owners
+ * @return {string} - Comma separated list of owners
  */
 export const getOwnersForGame = (gameid, gamesdata) => {
   let ind = gamesdata.thing_ids.indexOf(gameid);
+  if (ind < 0) {
+    return "";
+  }
   return gamesdata.owners[ind];
+};
+
+/**
+ * Check if a user owns a game the owners for a game
+ *
+ * @param username {string} - Username
+ * @param [gamesdata] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
+ * @return {boolean]} - Return wether the user owns the game
+ */
+export const isGameOwned = (owner, gameid, gamesdata) => {
+  let owners = getOwnersForGame(gameid, gamesdata);
+  return owners.indexOf(owner) >= 0;
 };
 
 /**
@@ -208,12 +223,7 @@ export const addGameToUserData = (user_data, thing_ids, names, categories) => {
  * @param owners {string[]} - Array of owners for boardgames
  * @return {array[games_data, integer]} - Array of length 2 containing the new games_data object and an "edited" integer 0/1 returning whether user_data was edited
  */
-export const addGameToGamesData = (
-  games_data,
-  thing_ids,
-  names,
-  owners
-) => {
+export const addGameToGamesData = (games_data, thing_ids, names, owners) => {
   let edited = 0;
   if (!games_data) {
     games_data = { thing_ids: [], names: [], owners: [] };

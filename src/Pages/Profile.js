@@ -7,36 +7,33 @@ import { getUser, getGames } from "../Scripts/firebase";
 import {
   getSessionStorage,
   setSessionStorage,
-  getOwnersForGame
+  getOwnersForGame,
+  isGameOwned
 } from "../Scripts/Utilities";
-import { Container, Row, Col } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import {
   TabContent,
   TabPane,
   Nav,
   NavItem,
-  NavLink,
-  Button,
+  NavLink
+  /*Button,
   CardTitle,
-  CardText
+  CardText*/
 } from "reactstrap";
 import "../Components/SearchBoardGame.css";
+import classnames from "classnames";
 
 class Profile extends Component {
   state = {
     username: undefined,
-    game_names: undefined,
+    game_names: [],
     thing_ids: [],
     localUser: getSessionStorage("localUser"),
     localGames: getSessionStorage("localGames"),
     activeTab: "yourGames"
   };
 
-  toggle(tab) {
-    if (this.state.activeTab !== tab) {
-      this.setState({ ...this.state, activeTab: tab });
-    }
-  }
   componentDidMount() {
     // Get games in session storage to state
     if (!this.state.localGames) {
@@ -58,9 +55,20 @@ class Profile extends Component {
     }
   }
 
+  // Change tab
+  toggle(tab) {
+    if (this.state.activeTab !== tab) {
+      this.setState({
+        ...this.state,
+        game_names: [],
+        thing_ids: [],
+        activeTab: tab
+      });
+    }
+  }
+
   // Called by SearchBoardGame when a boardgame suggestion is selected
   setGameInfo(thing_ids, game_names = []) {
-    console.log("thing_ids, game_names:", thing_ids, game_names);
     this.setState({
       ...this.state,
       thing_ids,
@@ -77,11 +85,12 @@ class Profile extends Component {
         <br />
         {username && <h1>Welcome {username}!</h1>}
         <br />
-
         <Nav tabs>
           <NavItem>
             <NavLink
-              //className={classnames({ active: this.state.activeTab === "1" })}
+              className={classnames({
+                active: this.state.activeTab === "yourGames"
+              })}
               onClick={() => {
                 this.toggle("yourGames");
               }}
@@ -91,7 +100,9 @@ class Profile extends Component {
           </NavItem>
           <NavItem>
             <NavLink
-              //className={classnames({ active: this.state.activeTab === "2" })}
+              className={classnames({
+                active: this.state.activeTab === "searchBoardGame"
+              })}
               onClick={() => {
                 this.toggle("searchBoardGame");
               }}
@@ -101,7 +112,9 @@ class Profile extends Component {
           </NavItem>
           <NavItem>
             <NavLink
-              //className={classnames({ active: this.state.activeTab === "2" })}
+              className={classnames({
+                active: this.state.activeTab === "searchCollection"
+              })}
               onClick={() => {
                 this.toggle("searchCollection");
               }}
@@ -110,12 +123,11 @@ class Profile extends Component {
             </NavLink>
           </NavItem>
         </Nav>
-
-        <TabContent activeTab={this.state.activeTab}>
+        <TabContent activeTab={this.state.activeTab} className="hey">
+          <br />
           <TabPane tabId="yourGames">
             <Row>
               <Col>
-                <h2>Your games</h2>
                 {localUser.thing_ids && !localUser.thing_ids.length && (
                   <p>No games found for you in this app's storage</p>
                 )}
@@ -125,6 +137,18 @@ class Profile extends Component {
                       key={game_id}
                       thing_id={game_id}
                       owners={getOwnersForGame(game_id, this.state.localGames)}
+                      addGame={
+                        !isGameOwned(
+                          this.state.username,
+                          game_id,
+                          this.state.localGames
+                        )
+                      }
+                      removeGame={isGameOwned(
+                        this.state.username,
+                        game_id,
+                        this.state.localGames
+                      )}
                     />
                   ))}
               </Col>
@@ -133,7 +157,6 @@ class Profile extends Component {
           <TabPane tabId="searchBoardGame">
             <Row>
               <Col>
-                <h2>Search a game</h2>
                 <br />
                 <div className="searchBoardGame">
                   <SearchBoardGame
@@ -153,16 +176,10 @@ class Profile extends Component {
           <TabPane tabId="searchCollection">
             <Row>
               <Col>
-                <h2>Search a collection</h2>
                 <br />
                 <div className="searchCollection">
                   <SearchCollection
                     passSelection={(thing_ids, names) => {
-                      console.log(
-                        "passSelection thing_ids, names:",
-                        thing_ids,
-                        names
-                      );
                       this.setGameInfo(thing_ids, names);
                     }}
                   />
@@ -175,11 +192,26 @@ class Profile extends Component {
         <div className="suggestedBoardGame">
           {thing_ids &&
             thing_ids.length > 0 &&
-            thing_ids.map((thing_id, ind) => (
-              <div key={thing_id}>
-                <Card thing_id={thing_id} />
+            thing_ids.map((game_id, ind) => (
+              <div key={game_id}>
+                <Card
+                  thing_id={game_id}
+                  owners={getOwnersForGame(game_id, this.state.localGames)}
+                  addGame={
+                    !isGameOwned(
+                      this.state.username,
+                      game_id,
+                      this.state.localGames
+                    )
+                  }
+                  removeGame={isGameOwned(
+                    this.state.username,
+                    game_id,
+                    this.state.localGames
+                  )}
+                />
                 <ButtonAddGames
-                  thing_id={thing_id}
+                  thing_id={game_id}
                   name={game_names[ind]}
                   onSubmit={(game_ids, game_names) => {
                     this.setGameInfo([], []);

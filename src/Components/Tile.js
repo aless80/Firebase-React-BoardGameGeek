@@ -17,7 +17,9 @@ const buildURL = (value, params) => {
 export default class Tile extends Component {
   state = {
     thing_id: this.props.thing_id,
-    doc: undefined
+    doc: undefined,
+    addGame: this.props.addGame,
+    removeGame: this.props.removeGame
   };
   owners = undefined; //this.props.owners;
 

@@ -18,7 +18,6 @@ import {
 export default class ButtonAddGames extends Component {
   onSubmit = e => {
     // Get the game
-    //const { name, thing_id } = this.state;
     const thing_id = this.props.thing_id;
     const name = this.props.name;
     if (!name || !thing_id) {
@@ -54,9 +53,8 @@ export default class ButtonAddGames extends Component {
         data_user,
         () => {
           console.log("Saved new document in Users collection");
-          let updated;
           let localUser = getSessionStorage("localUser");
-          [localUser, updated] = addGameToUserData(
+          [localUser] = addGameToUserData(
             localUser,
             [thing_id],
             [name],
@@ -65,7 +63,7 @@ export default class ButtonAddGames extends Component {
           setSessionStorage(localUser, "localUser");
           // Save games to SessionStorage, to save calls to Firebase
           let localGames = getSessionStorage("localGames");
-          [localGames, updated] = addGameToGamesData(
+          [localGames] = addGameToGamesData(
             localGames,
             [thing_id],
             [name],
@@ -97,6 +95,7 @@ export default class ButtonAddGames extends Component {
             </button>
           </div>
         </form>
+        <br />
       </div>
     );
   }

@@ -95,7 +95,11 @@ class Main extends Component {
         <div className="suggestedBoardGame">
           {thing_ids && thing_ids.length > 0 && (
             <div>
-              <Card thing_id={thing_ids[0]} />
+              <Card
+                thing_id={thing_ids[0]}
+                addGame={false}
+                removeGame={false}
+              />
               <br />
               <ButtonAddGames
                 thing_id={thing_ids[0]}
