@@ -51,7 +51,7 @@ class Main extends Component {
     const containerStyle = {
       display: "flex",
       flexWrap: "wrap",
-      margin: `-${spaceBetweenItems * 0.5}px`
+      //margin: `-${spaceBetweenItems * 0.5}px`
     };
     const itemStyle = {
       display: "block",
@@ -62,10 +62,9 @@ class Main extends Component {
     };
     return (
       <div className="panel-body">
-        <br />
         <h2>The group's games</h2>
         <div style={containerStyle}>
-          {this.state.localGames &&
+          {this.state.localGames ? (
             this.state.localGames.thing_ids.map(gameid => (
               <div key={gameid} style={itemStyle}>
                 <Tile
@@ -74,7 +73,10 @@ class Main extends Component {
                   owners={getOwnersForGame(gameid, this.state.localGames)}
                 />
               </div>
-            ))}
+            ))
+          ) : (
+            <p>No games found</p>
+          )}
         </div>
         <br />
 

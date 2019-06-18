@@ -18,15 +18,14 @@ Create an account in Firebase with a database. Set up a Database. Find the confi
 
 ## TODO
 Check https://brettspill.nærd.no/
-* SearchCollection: got Error on calling the API:Error: Network Error
 * SearchCollection: allow to add all games
-* refresh game list in profile when adding game. cannot add more than one game in one session
-* sort suggested games by relevance and then year
-* delete button
 * Tile text can be long (6 lines)
-* bug: add the first game and get "".thing_ids cannot be set. I think localstorage is ""
+* clear firebase helper methods
+* I put try catch around doc.getElementsByTagName("image"), can do better?
+
+## TODO maybe
 * Create UserData and GameData classes?
-* bug? qwerty game failed
+* sort suggested games by relevance and then year
 
 ## Data structure in Firebase
 ```

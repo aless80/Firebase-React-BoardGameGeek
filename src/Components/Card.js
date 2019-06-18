@@ -5,7 +5,9 @@ import { extractValueFromElements } from "../Scripts/Utilities";
 //import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { Container, Row, Col } from "reactstrap";
 import "./Tile.css";
-import Fab from "@material-ui/core/Fab";
+import AddGame from "./AddGame";
+import RemoveGame from "./RemoveGame";
+/*import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 /*import Icon from "@material-ui/core/Icon";
@@ -87,9 +89,15 @@ export default class Card extends Component {
       obj["gameName"] = doc
         .getElementsByTagName("name")[0]
         .getAttribute("value");
-      obj["img_src"] = doc.getElementsByTagName(
-        "image"
-      )[0].childNodes[0].nodeValue;
+      try {
+        // The API can returned malformed info (e.g. the qwerty game)!
+        obj["img_src"] = doc.getElementsByTagName(
+          "image"
+        )[0].childNodes[0].nodeValue;
+      } catch (error) {
+        obj["img_src"] =
+          "https://via.placeholder.com/450/0000FF/FFF?text=No+image+available";
+      }
       obj["yearpublished"] = doc.getElementsByTagName(
         "yearpublished"
       )[0].attributes.value.nodeValue;
@@ -170,34 +178,28 @@ export default class Card extends Component {
                   />
                   <div className="game_actions">
                     {this.state.addGame && (
-                      <Fab
-                        variant="extended"
-                        size="small"
-                        color="primary"
-                        aria-label="Add"
-                        className="fab_icon"
-                        onClick={() => {
-                          console.log("onClick add");
+                      <AddGame
+                        thing_id={this.state.thing_id}
+                        name={obj.gameName}
+                        onAddedGames={(game_ids, game_names) => {
+                          this.props.onAddedGames(game_ids, game_names);
+                          this.setState({
+                            ...this.state,
+                            addGame: false,
+                            removeGame: true
+                          });
                         }}
-                      >
-                        <AddIcon className="" />
-                        Add
-                      </Fab>
+                      />
                     )}
                     {this.state.removeGame && (
-                      <Fab
-                        variant="extended"
-                        size="small"
-                        color="secondary"
-                        aria-label="Add"
-                        className="fab_icon"
-                        onClick={() => {
-                          console.log("onClick rm");
+                      <RemoveGame
+                        thing_id={this.state.thing_id}
+                        name={obj.gameName}
+                        onRemovedGames={(game_ids, game_names) => {
+                          this.props.onRemovedGames(game_ids, game_names);
                         }}
-                      >
-                        <DeleteIcon className="" disabled />
-                        Remove
-                      </Fab>
+
+                      />
                     )}
                   </div>
                 </div>
@@ -241,9 +243,9 @@ export default class Card extends Component {
                       </div>
                     </Col>
                     <Col sm="7">
-                      <h3 className="vcenter">
+                      <h5 className="vcenter">
                         {obj.gameName + " (" + obj.yearpublished + ")"}
-                      </h3>
+                      </h5>
                     </Col>
                     <Col sm="1">
                       <a href={url} target="_blank" rel="noopener noreferrer">

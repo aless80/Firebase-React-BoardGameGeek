@@ -119,7 +119,7 @@ export const setSessionStorage = (gamesData, key = "localGames") => {
   if (typeof gamesData != "undefined") {
     sessionStorage.setItem(key, JSON.stringify(gamesData));
   } else {
-    console.error("Input gamesData not valid");
+    console.warn("Games data is undefined");
   }
 };
 
@@ -135,14 +135,6 @@ export const getSessionStorage = (key = "localGames") => {
   if (stringifiedGames === null) {
     console.log("No '" + key + "' key found in session storage");
     return "";
-    /*return {
-      lastEditorPicUrl: "",
-      lastEditor: "",
-      lastEdit: "",
-      thing_ids: [],
-      names: [],
-      owners: []
-    };*/
   }
   return JSON.parse(stringifiedGames);
 };
@@ -151,26 +143,30 @@ export const getSessionStorage = (key = "localGames") => {
  * Get the owners for a game
  *
  * @param gameid {integer} - gameid from BGG
- * @param [gamesdata] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
+ * @param [games_data] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
  * @return {string} - Comma separated list of owners
  */
-export const getOwnersForGame = (gameid, gamesdata) => {
-  let ind = gamesdata.thing_ids.indexOf(gameid);
+export const getOwnersForGame = (gameid, games_data) => {
+  if (!games_data.hasOwnProperty("thing_ids")) {
+    return "";
+  }
+  let ind = games_data.thing_ids.indexOf(gameid);
   if (ind < 0) {
     return "";
   }
-  return gamesdata.owners[ind];
+  return games_data.owners[ind];
 };
 
 /**
  * Check if a user owns a game the owners for a game
  *
  * @param username {string} - Username
- * @param [gamesdata] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
+ * @param [games_data] {object} - The games object to look into. Should have the standard format defined in Firebase for this app
  * @return {boolean]} - Return wether the user owns the game
  */
-export const isGameOwned = (owner, gameid, gamesdata) => {
-  let owners = getOwnersForGame(gameid, gamesdata);
+export const isGameOwned = (owner, gameid, games_data) => {
+  let owners = getOwnersForGame(gameid, games_data);
+  //console.log('isGameOwned: owner, gameid, games_data:', owners.indexOf(owner) >= 0, owner, gameid, games_data)
   return owners.indexOf(owner) >= 0;
 };
 
@@ -178,14 +174,19 @@ export const isGameOwned = (owner, gameid, gamesdata) => {
  * Add data to an object representing a firebase User collection
  *
  * @param user_data {object} - User data object. Can be empty
- * @param categories {string[]} - Array of Categories for boardgames, which in Firebase become the Document ID in the Games collection
  * @param thing_ids {string[]} - Array of BGG IDs for boardgames
  * @param names {string[]} - Array of names for BGG boardgames
+ * @param categories {string[]} - Array of Categories for boardgames, which in Firebase become the Document ID in the Games collection
  * @return {array[user_data, integer]} - Array of length 2 containing the new user_data object and an "edited" integer 0/1 returning whether user_data was edited
  */
 export const addGameToUserData = (user_data, thing_ids, names, categories) => {
   let edited = 0;
-  if (!user_data) {
+  if (
+    !user_data ||
+    !user_data.hasOwnProperty("thing_ids") ||
+    !user_data.hasOwnProperty("names") ||
+    !user_data.hasOwnProperty("categories")
+  ) {
     user_data = { thing_ids: [], names: [], categories: [] };
   }
   thing_ids.forEach((thing_id, ind) => {
@@ -203,6 +204,7 @@ export const addGameToUserData = (user_data, thing_ids, names, categories) => {
           .split(",")
           .indexOf(categories[ind]) === -1
       ) {
+        // Game was already stored but with a different category
         edited = 1;
         if (user_data["categories"][thing_id_ind].length) {
           user_data["categories"][thing_id_ind] += ",";
@@ -225,17 +227,24 @@ export const addGameToUserData = (user_data, thing_ids, names, categories) => {
  */
 export const addGameToGamesData = (games_data, thing_ids, names, owners) => {
   let edited = 0;
-  if (!games_data) {
+  if (
+    !games_data ||
+    !games_data.hasOwnProperty("thing_ids") ||
+    !games_data.hasOwnProperty("names") ||
+    !games_data.hasOwnProperty("owners")
+  ) {
     games_data = { thing_ids: [], names: [], owners: [] };
   }
   thing_ids.forEach((thing_id, ind) => {
     const thing_id_ind = games_data["thing_ids"].indexOf(thing_id);
     if (thing_id_ind === -1) {
+      // Add a new game
       edited = 1;
       games_data["thing_ids"].push(thing_id);
       games_data["names"].push(names[ind]);
       games_data["owners"].push(owners[ind]);
     } else {
+      // Game already exists in some user's data
       if (
         games_data["owners"][thing_id_ind].split(",").indexOf(owners[ind]) ===
         -1
@@ -246,6 +255,76 @@ export const addGameToGamesData = (games_data, thing_ids, names, owners) => {
         }
         games_data["owners"][thing_id_ind] += owners[ind];
       }
+    }
+  });
+  return [games_data, edited];
+};
+
+/**
+ * Remove games from an object representing a firebase User collection
+ *
+ * @param user_data {object} - User data object. Can be empty
+ * @param thing_ids {string[]} - Array of BGG IDs for boardgames
+ * @param names {string[]} - Array of names for BGG boardgames
+ * @param categories {string[]} - Array of Categories for boardgames, which in Firebase become the Document ID in the Games collection
+ * @return {user_data, integer} - Array of length 2 containing the new user_data object and an "edited" integer 0/1 returning whether user_data was edited
+ */
+export const removeGamesFromUserData = (user_data, thing_ids, categories) => {
+  let edited = 0;
+  if (!user_data) {
+    //user_data = { thing_ids: [], names: [], categories: [] };
+  }
+  thing_ids.forEach((thing_id, ind) => {
+    let thing_id_ind = -1;
+    if (user_data.hasOwnProperty("thing_ids")) {
+      thing_id_ind = user_data["thing_ids"].indexOf(thing_id);
+    }
+    if (thing_id_ind >= 0) {
+      // Removing a boardgame from the User data
+      edited = 1;
+      user_data["thing_ids"].splice(thing_id_ind, 1);
+      user_data["names"].splice(thing_id_ind, 1);
+      categories.forEach(category => {
+        user_data["categories"].splice(
+          user_data["categories"].indexOf(category),
+          1
+        );
+      });
+    } else {
+      // Game not present in User data
+    }
+  });
+  return [user_data, edited];
+};
+
+/**
+ * Remove games from an object representing a firebase Games collection
+ *
+ * @param games_data {object} - Games data object. Can be empty
+ * @param thing_ids {string[]} - Array of BGG IDs for boardgames
+ * @param owners {string[]} - Array of owners for boardgames
+ * @return {array[games_data, integer]} - Array of length 2 containing the new games_data object and an "edited" integer 0/1 returning whether user_data was edited
+ */
+export const removeGamesFromGamesData = (games_data, thing_ids, owners) => {
+  let edited = 0;
+  if (!games_data) {
+    //games_data = { thing_ids: [], names: [], owners: [] };
+  }
+  thing_ids.forEach((thing_id, ind) => {
+    let thing_id_ind = -1;
+    if (games_data.hasOwnProperty("thing_ids")) {
+      thing_id_ind = games_data["thing_ids"].indexOf(thing_id);
+    }
+    if (thing_id_ind >= 0) {
+      // Removing a boardgame from the Games data
+      edited = 1;
+      games_data["thing_ids"].splice(thing_id_ind, 1);
+      games_data["names"].splice(thing_id_ind, 1);
+      owners.forEach(owner => {
+        games_data["owners"].splice(games_data["owners"].indexOf(owner), 1);
+      });
+    } else {
+      // Game not present in Games data
     }
   });
   return [games_data, edited];

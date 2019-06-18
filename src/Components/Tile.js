@@ -69,9 +69,15 @@ export default class Tile extends Component {
       obj["gameName"] = doc
         .getElementsByTagName("name")[0]
         .getAttribute("value");
-      obj["img_src"] = doc.getElementsByTagName(
-        "image"
-      )[0].childNodes[0].nodeValue;
+      try {
+        // The API can returned malformed info (e.g. the qwerty game)!
+        obj["img_src"] = doc.getElementsByTagName(
+          "image"
+        )[0].childNodes[0].nodeValue;
+      } catch (error) {
+        obj["img_src"] =
+          "https://via.placeholder.com/450/0000FF/FFF?text=No+image+available";
+      }
       obj["yearpublished"] = doc.getElementsByTagName(
         "yearpublished"
       )[0].attributes.value.nodeValue;
@@ -151,11 +157,11 @@ export default class Tile extends Component {
                 />
               </Col>
               <Col sm={this.owners ? "6" : "8"}>
-                <h3 className="vcenter game_info">
+                <h5 className="vcenter game_info">
                   <div className="game_name">{obj.gameName + " "}
                     {"(" + obj.yearpublished + ")"}
                   </div>
-                </h3>
+                </h5>
               </Col>
             </Row>
             <Row>&nbsp;</Row>

@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import {
   getCurrentUser,
   getProfilePicUrl,
-  getServerTimestamp
-} from "../Scripts/firebase";
-import {
+  getServerTimestamp,
   pushGamesToUsersCollection,
   pushGamesToGamesCollection
 } from "../Scripts/firebase";
@@ -14,8 +12,10 @@ import {
   addGameToUserData,
   addGameToGamesData
 } from "../Scripts/Utilities";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
-export default class ButtonAddGames extends Component {
+export default class AddGame extends Component {
   onSubmit = e => {
     // Get the game
     const thing_id = this.props.thing_id;
@@ -47,6 +47,7 @@ export default class ButtonAddGames extends Component {
       };
       // Save in Firebase, Users collection
       pushGamesToUsersCollection(
+        owner,
         [thing_id],
         [name],
         ["owned"],
@@ -71,7 +72,7 @@ export default class ButtonAddGames extends Component {
           );
           setSessionStorage(localGames, "localGames");
           //Send thing_ids added to parent
-          this.props.onSubmit([thing_id], [name]);
+          this.props.onAddedGames([thing_id], [name]);
         }
       );
     };
@@ -87,6 +88,20 @@ export default class ButtonAddGames extends Component {
   render() {
     return (
       <div>
+        <Fab
+          variant="extended"
+          size="small"
+          color="primary"
+          aria-label="Add"
+          className="fab_icon"
+          onClick={(event) => {
+            this.onSubmit(event)
+          }}
+        >
+          <AddIcon className="" />
+          Add
+        </Fab>
+        {/*
         <form onSubmit={this.onSubmit}>
           <div className="form-group" />
           <div>
@@ -96,6 +111,8 @@ export default class ButtonAddGames extends Component {
           </div>
         </form>
         <br />
+      </div>
+      */}
       </div>
     );
   }

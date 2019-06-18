@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Card from "../Components/Card";
 import SearchBoardGame from "../Components/SearchBoardGame";
 import SearchCollection from "../Components/SearchCollection";
-import ButtonAddGames from "../Components/ButtonAddGames";
+//import ButtonAddGames from "../Components/ButtonAddGames";
 import { getUser, getGames } from "../Scripts/firebase";
 import {
   getSessionStorage,
@@ -79,12 +79,10 @@ class Profile extends Component {
   }
 
   render() {
-    let { thing_ids, game_names, username, localUser } = this.state;
+    let { thing_ids, username, localUser } = this.state; //game_names
     return (
       <div className="panel-body">
-        <br />
-        {username && <h1>Welcome {username}!</h1>}
-        <br />
+        {username ? <h2>{username}'s Profile Page</h2> : <h2>Profile Page</h2>}
         <Nav tabs>
           <NavItem>
             <NavLink
@@ -128,9 +126,9 @@ class Profile extends Component {
           <TabPane tabId="yourGames">
             <Row>
               <Col>
-                {localUser.thing_ids && !localUser.thing_ids.length && (
-                  <p>No games found for you in this app's storage</p>
-                )}
+                {(localUser === "" ||
+                  !localUser.thing_ids ||
+                  !localUser.thing_ids.length) && <p>No games found</p>}
                 {localUser.thing_ids &&
                   localUser.thing_ids.map(game_id => (
                     <Card
@@ -149,6 +147,23 @@ class Profile extends Component {
                         game_id,
                         this.state.localGames
                       )}
+                      onAddedGames={() => {}}
+                      // Update localStorage when a new game is removed
+                      onRemovedGames={(game_ids, game_names) => {
+                        // Remove game from localStorage
+                        this.setGameInfo(
+                          [
+                            ...thing_ids.filter(
+                              thing_id => game_ids.indexOf(thing_id) >= 0
+                            )
+                          ],
+                          [
+                            ...this.state.game_names.filter(
+                              name => game_names.indexOf(name) >= 0
+                            )
+                          ]
+                        );
+                      }}
                     />
                   ))}
               </Col>
@@ -209,14 +224,43 @@ class Profile extends Component {
                     game_id,
                     this.state.localGames
                   )}
+                  // Update localStorage when a new game is added
+                  onAddedGames={(game_ids, game_names) => {
+                    if (thing_ids.indexOf(game_ids[0]) >= 0) {
+                      // Use setGameInfo to call getSessionStorage
+                      this.setGameInfo(thing_ids, this.state.game_names);
+                    } else {
+                      // Add new game to localStorage
+                      this.setGameInfo(
+                        [...thing_ids, ...game_ids],
+                        [...this.state.game_names, ...game_names]
+                      );
+                    }
+                  }}
+                  // Update localStorage when a new game is removed
+                  onRemovedGames={(game_ids, game_names) => {
+                    // Remove game from localStorage
+                    this.setGameInfo(
+                      [
+                        ...thing_ids.filter(
+                          thing_id => game_ids.indexOf(thing_id) >= 0
+                        )
+                      ],
+                      [
+                        ...this.state.game_names.filter(
+                          name => game_names.indexOf(name) >= 0
+                        )
+                      ]
+                    );
+                  }}
                 />
-                <ButtonAddGames
+                {/*<ButtonAddGames
                   thing_id={game_id}
                   name={game_names[ind]}
                   onSubmit={(game_ids, game_names) => {
                     this.setGameInfo([], []);
                   }}
-                />
+                />*/}
               </div>
             ))}
         </div>
