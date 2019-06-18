@@ -52,10 +52,9 @@ Users: {
 
 ## TODO
 Check https://brettspill.nærd.no/
-* Profile vs Main
 * SearchCollection: allow to add all games
 * Tile text can be long (6 lines) - maybe https://stackoverflow.com/questions/16056591/font-scaling-based-on-width-of-container
-* clear firebase helper methods
+* Tile "Play time (mins)" is squeezed
 * I put try catch around doc.getElementsByTagName("image"), can do better?
 
 ## TODO maybe
