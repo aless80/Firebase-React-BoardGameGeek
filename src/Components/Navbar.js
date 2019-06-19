@@ -9,10 +9,10 @@ import {
   Nav,
   NavItem,
   NavLink,
-  UncontrolledDropdown,
+  /*UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem*/
 } from "reactstrap";
 import {
   signIn,
@@ -81,18 +81,15 @@ export default class Navbar extends Component {
                 Profile
               </NavLink>*/}
 
-              <UncontrolledDropdown nav inNavbar>
+              {/*<UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   Navigate
                 </DropdownToggle>
                 <DropdownMenu right>
                   <DropdownItem href="/">Home</DropdownItem>
                   <DropdownItem href="/profile">Profile</DropdownItem>
-                  {/*<DropdownItem divider />
-                  <DropdownItem>Reset</DropdownItem>
-                  */}
                 </DropdownMenu>
-              </UncontrolledDropdown>
+              </UncontrolledDropdown>*/}
             </Nav>
           </Collapse>
         </Navbarstrap>

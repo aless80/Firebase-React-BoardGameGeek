@@ -104,7 +104,7 @@ class Main extends Component {
   }
 
   render() {
-    let { thing_ids, username, localUser } = this.state;
+    let { thing_ids, localUser } = this.state;
     const numItemsPerRow = 3;
     const spaceBetweenItems = 20;
     const containerStyle = {

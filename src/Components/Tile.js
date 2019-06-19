@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Container, Row, Col } from "reactstrap";
-import { extractValueFromElements } from "../Scripts/Utilities";
-//import { Container, ListGroup, ListGroupItem } from "reactstrap";
-//import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { getInfoFromThingAPI } from "../Scripts/Utilities";
 import "./Tile.css";
+
 // Construct the URL for API calls
 // value is the thing id
 // params (required): parameters object including stats
@@ -46,101 +45,10 @@ export default class Tile extends Component {
       .catch(err => console.error("Error on calling the API::", err));
   }
 
-  indexOfMax(arr) {
-    if (arr.length === 0) {
-      return -1;
-    }
-    var max = arr[0];
-    var maxIndex = 0;
-    for (var i = 1; i < arr.length; i++) {
-      if (arr[i] > max) {
-        maxIndex = i;
-        max = arr[i];
-      }
-    }
-    return maxIndex;
-  }
-
   render() {
     let { doc } = this.state;
     //let url = buildURL(this.props.thing_id, { stats: 1 });
-    let obj = {};
-    if (typeof doc !== "undefined") {
-      obj["gameName"] = doc
-        .getElementsByTagName("name")[0]
-        .getAttribute("value");
-      try {
-        // The API can returned malformed info (e.g. the qwerty game)!
-        obj["img_src"] = doc.getElementsByTagName(
-          "image"
-        )[0].childNodes[0].nodeValue;
-      } catch (error) {
-        obj["img_src"] =
-          "https://via.placeholder.com/450/0000FF/FFF?text=No+image+available";
-      }
-      obj["yearpublished"] = doc.getElementsByTagName(
-        "yearpublished"
-      )[0].attributes.value.nodeValue;
-      obj["minplayers"] = doc.getElementsByTagName(
-        "minplayers"
-      )[0].attributes.value.nodeValue;
-      obj["maxplayers"] = doc.getElementsByTagName(
-        "maxplayers"
-      )[0].attributes.value.nodeValue;
-      obj["playingtime"] = doc.getElementsByTagName(
-        "playingtime"
-      )[0].attributes.value.nodeValue;
-      obj["minplaytime"] = doc.getElementsByTagName(
-        "minplaytime"
-      )[0].attributes.value.nodeValue;
-      obj["maxplaytime"] = doc.getElementsByTagName(
-        "maxplaytime"
-      )[0].attributes.value.nodeValue;
-      // Link with game characteristics
-      // Example: <link type="boardgamecategory" id="1026" value="Negotiation"/>
-      obj["boardgamecategory"] = extractValueFromElements(
-        doc,
-        "link",
-        "value",
-        "type",
-        "boardgamecategory"
-      ).join(", ");
-      // Example: <link type="boardgamemechanic" id="2072" value="Dice Rolling"/>
-      obj["boardgamemechanic"] = extractValueFromElements(
-        doc,
-        "link",
-        "value",
-        "type",
-        "boardgamemechanic"
-      ).join(", ");
-      // Polls
-      // Extract two arrays with this information
-      // <results numplayers="3">
-      //   <result value="Best" numvotes="421"/> ..
-      let numplayers = extractValueFromElements(doc, "results", "numplayers");
-      let numvotes = extractValueFromElements(
-        doc,
-        "result",
-        "numvotes",
-        "value",
-        "Best"
-      );
-      obj["bestnplayers"] = numplayers[this.indexOfMax(numvotes)];
-      // Stats
-      //obj[stats] = doc.getElementsByTagName("statistics")[0].attributes.value;
-      obj["usersrated"] = doc.getElementsByTagName(
-        "usersrated"
-      )[0].attributes.value.nodeValue;
-      obj["average"] = doc.getElementsByTagName(
-        "average"
-      )[0].attributes.value.nodeValue;
-      obj["stddev"] = doc.getElementsByTagName(
-        "stddev"
-      )[0].attributes.value.nodeValue;
-      obj["averageweight"] = doc.getElementsByTagName(
-        "averageweight"
-      )[0].attributes.value.nodeValue;
-    }
+    let obj = getInfoFromThingAPI(doc)
     return (
       <div>
         {doc === "undefined" && <div className="spinner" />}

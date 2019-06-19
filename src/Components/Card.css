@@ -1,26 +1,22 @@
-.tile_container {
+.card_container {
+  margin-left: 0px;
   color: white;
   line-height: 1.5;
-  background-color: rgba(0, 0, 0, 0.8);
-  max-width: 600px;
 }
-.tile_container .game_img {
-  color: #ffd866;
+.card_row {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.card_container .game_img {
   position: absolute;
-  max-height: 100%;
+  max-height: 95%;
   max-width: 95%;
   width: auto;
   height: auto;
   align-items: center;
-  margin: 0 0;
 }
-.tile_container .game_data {
-  color: #ffd866;
-  margin-top: 0.6em;
-  font-size: 14px;
-  line-height: 10px;
-  font-weight: 400;
-  text-align: center;
+.card_container .owners {
+  overflow: auto;
+  max-height: 325px;
 }
 .game_info {
   display: flex;
@@ -30,6 +26,7 @@
 .game_name {
   bottom: 0em;
   font-size: 1em;
+  font-size: 2vh;
   line-height: 1.2em;
   min-height: 3.5em;
 }

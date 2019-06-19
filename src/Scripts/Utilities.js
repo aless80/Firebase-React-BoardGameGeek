@@ -95,6 +95,100 @@ export const extractTextContentFromElements = (
 };
 
 /**
+ * Helper method to find the index of the maximum in an array
+ *
+ * @param {array} - Array
+ */
+export const indexOfMax = arr => {
+  if (arr.length === 0) {
+    return -1;
+  }
+  var max = arr[0];
+  var maxIndex = 0;
+  for (var i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+  }
+  return maxIndex;
+};
+
+/**
+ * Extract information from BGG's "Thing Items" API (see https://boardgamegeek.com/wiki/page/BGG_XML_API2)
+ *
+ * @param doc {object} - The parsed XMLresponse
+ * @return {object} - Object containing the parsed information
+ */
+export const getInfoFromThingAPI = doc => {
+  let obj = {};
+  if (typeof doc !== "undefined") {
+    obj["gameName"] = doc.getElementsByTagName("name")[0].getAttribute("value");
+    try {
+      // The API can returned malformed info (e.g. the qwerty game)!
+      obj["img_src"] = doc.getElementsByTagName(
+        "image"
+      )[0].childNodes[0].nodeValue;
+    } catch (error) {
+      obj["img_src"] =
+        "https://via.placeholder.com/450/0000FF/FFF?text=No+image+available";
+    }
+    [
+      "yearpublished",
+      "minplayers",
+      "maxplayers",
+      "playingtime",
+      "minplaytime",
+      "maxplaytime",
+      // Stats
+      "usersrated",
+      "average",
+      "stddev",
+      "averageweight"
+    ].forEach(attr => {
+      try {
+        obj[attr] = doc.getElementsByTagName(
+          attr
+        )[0].attributes.value.nodeValue;
+      } catch (error) {
+        obj[attr] = "";
+      }
+    });
+    // Link with game characteristics
+    // Example: <link type="boardgamecategory" id="1026" value="Negotiation"/>
+    obj["boardgamecategory"] = extractValueFromElements(
+      doc,
+      "link",
+      "value",
+      "type",
+      "boardgamecategory"
+    ).join(", ");
+    // Example: <link type="boardgamemechanic" id="2072" value="Dice Rolling"/>
+    obj["boardgamemechanic"] = extractValueFromElements(
+      doc,
+      "link",
+      "value",
+      "type",
+      "boardgamemechanic"
+    ).join(", ");
+    // Polls
+    // Extract two arrays with this information
+    // <results numplayers="3">
+    //   <result value="Best" numvotes="421"/> ..
+    let numplayers = extractValueFromElements(doc, "results", "numplayers");
+    let numvotes = extractValueFromElements(
+      doc,
+      "result",
+      "numvotes",
+      "value",
+      "Best"
+    );
+    obj["bestnplayers"] = numplayers[indexOfMax(numvotes)];
+  }
+  return obj;
+};
+
+/**
  * format numbers with leading zeroes
  *
  * @param integer {integer} - An integer
