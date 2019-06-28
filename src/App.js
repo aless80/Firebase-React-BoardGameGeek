@@ -5,7 +5,7 @@ import Navbar from "./Components/Navbar";
 import Main from "./Pages/Main";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import "./App.css"
+import "./App.css";
 // Secure routes
 function AuthenticatedRoute({
   component: Component,
@@ -59,7 +59,11 @@ export default class App extends Component {
           <Navbar setuserCallback={this.setUser} />
           <main className="mdl-layout__content mdl-color--grey-100">
             <Switch>
-              <Route exact path="/" component={Main} />
+              <Route
+                exact
+                path="/"
+                render={props => <Main {...props} user={this.state.user} />}
+              />
               <AuthenticatedRoute
                 exact
                 path="/login"

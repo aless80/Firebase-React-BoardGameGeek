@@ -53,8 +53,7 @@ Users: {
 ## TODO
 Check https://brettspill.nærd.no/
 * SearchCollection: allow to add all games
-* Tile text can be long (6 lines) - maybe https://stackoverflow.com/questions/16056591/font-scaling-based-on-width-of-container
-* Tile "Play time (mins)" is squeezed
+* instead of max-width: 600px;   in Tile.css, make the tiles "scale" with page zoom
 
 ## TODO maybe
 * profile page with import from collection

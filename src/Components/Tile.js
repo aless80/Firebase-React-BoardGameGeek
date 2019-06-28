@@ -7,7 +7,7 @@ import "./Tile.css";
 // Construct the URL for API calls
 // value is the thing id
 // params (required): parameters object including stats
-const buildURL = (value, params) => {
+const buildAPIURL = (value, params) => {
   let stats = params.stats;
   let queryUrl = `https://www.boardgamegeek.com/xmlapi2/thing?id=${value}&stats=${stats}`;
   return queryUrl;
@@ -20,7 +20,6 @@ export default class Tile extends Component {
     addGame: this.props.addGame,
     removeGame: this.props.removeGame
   };
-  owners = undefined; //this.props.owners;
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     //Always compare props
@@ -34,7 +33,7 @@ export default class Tile extends Component {
   }
 
   queryBGGThing(value) {
-    let queryUrl = buildURL(value, { stats: 1 });
+    let queryUrl = buildAPIURL(value, { stats: 1 });
     axios
       .get(queryUrl)
       .then(xml => {
@@ -47,16 +46,15 @@ export default class Tile extends Component {
 
   render() {
     let { doc } = this.state;
-    //let url = buildURL(this.props.thing_id, { stats: 1 });
-    let obj = getInfoFromThingAPI(doc)
+    //let apiUrl = buildAPIURL(this.props.thing_id, { stats: 1 });
+    let obj = getInfoFromThingAPI(doc);
     return (
       <div>
         {doc === "undefined" && <div className="spinner" />}
         {typeof doc !== "undefined" && (
           <Container className="tile_container">
-            <Row>&nbsp;</Row>
-            <Row className="">
-              <Col sm="4">
+            <Row className="display">
+              <Col sm="4 game_img_col">
                 <img
                   className="game_img"
                   src={obj.img_src}
@@ -64,16 +62,17 @@ export default class Tile extends Component {
                   style={{ display: "inline-block", alignItems: "center" }}
                 />
               </Col>
-              <Col sm={this.owners ? "6" : "8"}>
-                <h5 className="vcenter game_info">
-                  <div className="game_name">{obj.gameName + " "}
-                    {"(" + obj.yearpublished + ")"}
-                  </div>
+              <Col sm="8" className="game_title_col">
+                <h5
+                  className="vcenter game_title"
+                  title={obj.gameName + " (" + obj.yearpublished + ")"}
+                >
+                  {obj.gameName + " "}
+                  {"(" + obj.yearpublished + ")"}
                 </h5>
               </Col>
             </Row>
-            <Row>&nbsp;</Row>
-            <Row>
+            <Row className="stats">
               <Col
                 sm="3"
                 className="borderTop borderRight"
@@ -87,46 +86,41 @@ export default class Tile extends Component {
                   " users"
                 }
               >
-                <p className="game_data centered">
+                <p className="centered stacked">
                   <b>{parseFloat(obj.average).toFixed(1)}</b>
+                  <span>Rating</span>
                 </p>
-                <p className="game_data centered">Rating</p>
               </Col>
               <Col sm="3" className="borderRight borderTop">
-                <p
-                  className="game_data centered"
-                  title={"Best:" + obj.bestnplayers}
-                >
+                <p className="centered" title={"Best:" + obj.bestnplayers}>
                   <b>
                     {obj.minplayers !== obj.maxplayers
                       ? obj.minplayers + " - " + obj.maxplayers
                       : obj.minplayers}
                   </b>
+                  <span>Players</span>
                 </p>
-                <p className="game_data centered">Players</p>
               </Col>
               <Col sm="3" className="borderTop borderRight">
                 <p
-                  className="game_data centered"
-                  title={
-                    " (" + obj.minplaytime + "-" + obj.maxplaytime + ") Min"
-                  }
+                  className="centered"
+                  title={obj.minplaytime + "-" + obj.maxplaytime + " mins"}
                 >
-                  <b>{obj.playingtime}</b>
+                  <b>{obj.playingtime + "'"} </b>
+                  <span>Playtime</span>
                 </p>
-                <p className="game_data centered">Play time (mins)</p>
               </Col>
               <Col sm="3" className="borderTop">
-                <p className="game_data centered">
+                <p className="centered">
                   <b>{parseFloat(obj.averageweight).toFixed(1) + " / 5"}</b>
+                  <span>Weight</span>
                 </p>
-                <p className="game_data centered">Weight</p>
               </Col>
             </Row>
 
             {/*this.owners && (
                 <Col sm="3">
-                  <p className="game_data">
+                  <p className="">
                     <b>Owners</b>
                   </p>
                   {this.owners.split(",").map((owner, ind) => (
@@ -136,8 +130,6 @@ export default class Tile extends Component {
                   ))}
                 </Col>
                   )*/}
-
-            <br />
           </Container>
         )}
       </div>

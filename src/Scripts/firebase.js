@@ -127,8 +127,6 @@ export const getGames = (onAfterGetDocument = () => {}) => {
     .doc("owned")
     .get()
     .then(doc => {
-      var document = doc.data();
-      console.log("document:", document);
       onAfterGetDocument(doc);
     })
     .catch(error => {

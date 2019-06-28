@@ -8,7 +8,7 @@ import {
 // Construct the URL for API calls
 // value is the username
 // params (required): parameters object including stats
-const buildURL = (value, params) => {
+const buildAPIURL = (value, params) => {
   /*BGG: Note that the default (or using subtype=boardgame) returns both boardgame and boardgameexpansion's in your collection... but incorrectly gives subtype=boardgame for the expansions. Workaround is to use excludesubtype=boardgameexpansion and make a 2nd call asking for subtype=boardgameexpansion*/
   let queryUrl = `https://www.boardgamegeek.com/xmlapi2/collection?username=${value}&subtype=boardgame&own=1`;
   //NB: with &stats=1 you get some more info: minplayers maxplayers minplaytime maxplaytime
@@ -23,7 +23,7 @@ export default class SearchCollection extends Component {
   collection = "";
 
   queryBGGCollection(value) {
-    let queryUrl = buildURL(value, { stats: 1 });
+    let queryUrl = buildAPIURL(value, { stats: 1 });
     axios.create({
       baseURL: queryUrl,
       timeout: 1000

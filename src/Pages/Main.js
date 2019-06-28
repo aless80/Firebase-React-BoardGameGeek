@@ -137,13 +137,13 @@ class Main extends Component {
           <NavItem>
             <NavLink
               className={classnames({
-                active: this.state.activeTab === "yourGames"
+                active: this.state.activeTab === "myGames"
               })}
               onClick={() => {
-                this.toggle("yourGames");
+                this.toggle("myGames");
               }}
             >
-              Your games
+              My games
             </NavLink>
           </NavItem>
           <NavItem>
@@ -192,8 +192,8 @@ class Main extends Component {
         <TabContent activeTab={this.state.activeTab} className="hey">
           <br />
 
-          {/* Tab: Your games */}
-          <TabPane tabId="yourGames">
+          {/* Tab: My games */}
+          <TabPane tabId="myGames">
             <Row>
               <Col>
                 {(localUser === "" ||

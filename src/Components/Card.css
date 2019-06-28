@@ -1,40 +1,65 @@
 .card_container {
   margin-left: 0px;
   color: white;
-  line-height: 1.5;
+  line-height: 1.2;
 }
 .card_row {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(50, 50, 50, 1);
 }
-.card_container .game_img {
-  position: absolute;
-  max-height: 95%;
-  max-width: 95%;
+.card_container .game_img_col .game_img {
+  padding: 0;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  max-height: 100%;
+  max-width: 100%;
+
+  line-height: 1.2em;
+  min-height: 18em;
+
   width: auto;
   height: auto;
   align-items: center;
+  margin: 0 0;
 }
-.card_container .owners {
-  overflow: auto;
-  max-height: 325px;
-}
-.game_info {
-  display: flex;
-  font-weight: 500;
+
+.card_container .game_header {
+  margin-top: 1em;
+  position: relative;
   line-height: 1.2em;
+  min-height: 7.2em;
 }
-.game_name {
-  bottom: 0em;
-  font-size: 1em;
-  font-size: 2vh;
+
+.card_container .stats.row {
+  position: relative;
   line-height: 1.2em;
-  min-height: 3.5em;
+  min-height: 4.8em;
 }
-.vcenter {
+.card_container .stats p {
+  color: #ffd866;
+  font-size: 0.85rem;
+  line-height: 1.2em;
+  font-weight: 400;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 2em;
+  margin-top: -1.5em;
+  margin-left: -2em;
+}
+.card_container .stats span {
+  display: block;
+}
+
+.card_container .categories {
+  line-height: 1.2em;
+  min-height: 6em;
+}
+
+.card_container .vcenter {
   display: inline-block;
   vertical-align: middle;
 }
-.rating {
+.card_container .rating {
   height: 100%;
   width: 100%;
   color: #fff;
@@ -49,33 +74,39 @@
   /* align vertical */
   z-index: 100;
 }
-
+.card_container .hexagon_col {
+  margin-top: 0.5em;
+}
 .hexagon {
   position: relative;
-  width: 80px;
-  height: 46.189333333px;
+  width: 5em;
+  height: 2.886833333em;
   background-color: #1d8acd;
-  margin: 10px 0;
+  margin: 0.625em 0;
 }
 .hexagon:before,
 .hexagon:after {
   content: "";
   position: absolute;
   width: 0;
-  border-left: 40px solid transparent;
-  border-right: 40px solid transparent;
+  border-left: 2.5em solid transparent;
+  border-right: 2.5em solid transparent;
 }
 .hexagon:before {
   bottom: 100%;
-  border-bottom: 23.1px solid #1d8acd;
+  border-bottom: 1.43825em solid #1d8acd;
 }
 .hexagon:after {
   top: 100%;
   width: 0;
-  border-top: 23.1px solid #1d8acd;
+  border-top: 1.43825em solid #1d8acd;
 }
 .centered {
   text-align: center;
+}
+.card_container .game_data {
+  margin-top: 1em;
+  font-size: 0.85rem;
 }
 .borderTop {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -84,48 +115,31 @@
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.card_container .owners {
+  margin-top: 1em;
+  overflow: auto;
+  max-height: 325px;
 
-
-
-.card_container .game_img {
-  opacity: 1;
-  display: block;
-  transition: .5s ease;
-  backface-visibility: hidden;
+  font-size: 0.85rem;
 }
-.game_actions {
-  transition: .5s ease;
-  opacity: 1;
-  position: absolute;
-  top: 2%;
-  left: 2%;
-  text-align: left;
-}
-.img_container:hover .game_img {
+
+.card_container .img_container:hover .game_img {
   opacity: 0.3;
 }
-
-.img_container:hover .game_actions {
+.card_container .img_container:hover .game_actions {
   opacity: 1;
 }
 
-
-.game_actions {
-  transition: .5s ease;
+.card_container .game_actions {
+  transition: 0.5s ease;
   opacity: 0;
-  position: relative;
-  top: 0%;
-  left: 0%;
+  position: absolute;
+  top: 0.5em;
+  left: 0.5em;
   transform: translate(0%, 0%);
   -ms-transform: translate(0%, 0%);
   text-align: left;
 }
-.text {
-  background-color: #4CAF50;
-  color: white;
-  font-size: 16px;
-  padding: 16px 32px;
-}
-.game_actions button {
+.card_container .game_actions button {
   margin-bottom: 5px;
 }

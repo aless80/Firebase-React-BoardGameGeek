@@ -9,7 +9,7 @@ var timeout = undefined;
 // Construct the URL for API calls
 // value: the query
 // params (required): parameters object including boardgame, boardgameaccessory, boardgameexpansion
-const buildURL = (value, params) => {
+const buildAPIURL = (value, params) => {
   let exact = params.exact;
   let typesObj = {
     boardgame: params["boardgame"],
@@ -97,7 +97,7 @@ class SearchBoardGame extends React.Component {
 
   // API call
   queryAPI(value, params) {
-    let queryUrl = buildURL(value, params);
+    let queryUrl = buildAPIURL(value, params);
     axios
       .get(queryUrl)
       .then(xml => {

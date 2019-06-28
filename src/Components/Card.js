@@ -9,10 +9,16 @@ import RemoveGame from "./RemoveGame";
 // Construct the URL for API calls
 // value is the thing id
 // params (required): parameters object including stats
-const buildURL = (value, params) => {
+const buildAPIURL = (value, params) => {
   let stats = params.stats;
-  let queryUrl = `https://www.boardgamegeek.com/xmlapi2/thing?id=${value}&stats=${stats}`;
-  return queryUrl;
+  return `https://www.boardgamegeek.com/xmlapi2/thing?id=${value}&stats=${stats}`;
+};
+
+// Construct the URL to the main page of BGG
+// value is the thing id
+// params (required): parameters object including stats
+const buildURL = (value, params) => {
+  return `https://boardgamegeek.com/boardgame/${value}`;
 };
 
 export default class Card extends Component {
@@ -46,7 +52,7 @@ export default class Card extends Component {
   }
 
   queryBGGThing(value) {
-    let queryUrl = buildURL(value, { stats: 1 });
+    let queryUrl = buildAPIURL(value, { stats: 1 });
     axios
       .get(queryUrl)
       .then(xml => {
@@ -59,16 +65,16 @@ export default class Card extends Component {
 
   render() {
     let { doc } = this.state;
-    let url = buildURL(this.props.thing_id, { stats: 1 });
-    let obj = getInfoFromThingAPI(doc)
+    let apiUrl = buildAPIURL(this.props.thing_id, { stats: 1 });
+    let url = buildURL(this.props.thing_id);
+    let obj = getInfoFromThingAPI(doc);
     return (
       <div>
         {doc === "undefined" && <div className="spinner" />}
         {typeof doc !== "undefined" && (
           <Container className="card_container">
-            <Row className="card_row">&nbsp;</Row>
-            <Row className="card_row">
-              <Col sm="3">
+            <Row className="card_row display">
+              <Col sm="3 game_img_col">
                 <div className="img_container">
                   <img
                     className="game_img"
@@ -98,7 +104,6 @@ export default class Card extends Component {
                         onRemovedGames={(game_ids, game_names) => {
                           this.props.onRemovedGames(game_ids, game_names);
                         }}
-
                       />
                     )}
                   </div>
@@ -121,10 +126,10 @@ export default class Card extends Component {
                   <BottomNavigationAction label="Something" icon={<Icon />} />
                 </BottomNavigation>*/}
               </Col>
-              <Col sm={this.owners ? "6" : "9"}>
+              <Col sm={this.owners ? "7" : "9"} className="game_header_col">
                 <Container>
-                  <Row>
-                    <Col sm="3">
+                  <Row className="game_header">
+                    <Col sm="3" className="hexagon_col">
                       <div className="hexagon">
                         <div
                           className="rating"
@@ -142,62 +147,64 @@ export default class Card extends Component {
                         </div>
                       </div>
                     </Col>
-                    <Col sm="7">
-                      <h5 className="vcenter">
+                    <Col sm="7" className="game_title_col">
+                      <h4
+                        className="vcenter"
+                        title={obj.gameName + " (" + obj.yearpublished + ")"}
+                      >
                         {obj.gameName + " (" + obj.yearpublished + ")"}
-                      </h5>
+                      </h4>
                     </Col>
-                    <Col sm="1">
-                      <a href={url} target="_blank" rel="noopener noreferrer">
+                    <Col sm="2" className="game_link_col">
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Go to BoardGameGeek"
+                      >
                         <h3 className="vcenter">Link</h3>
                       </a>
                     </Col>
-                    <Col sm="1" />
                   </Row>
                 </Container>
-                <br />
                 <Container>
-                  <Row>
+                  <Row className="stats">
                     <Col className="borderTop borderRight">
-                      <p className="game_data centered">
+                      <p
+                        className="game_data centered"
+                        title={"Best:" + obj.bestnplayers}
+                      >
                         <b>
                           {obj.minplayers !== obj.maxplayers
                             ? obj.minplayers + " - " + obj.maxplayers
                             : obj.minplayers}
                         </b>
-                      </p>
-                      <p className="game_data centered">
-                        Best: {obj.bestnplayers}
+                        <span>Players</span>
                       </p>
                     </Col>
                     <Col className="borderRight borderTop">
                       <p
                         className="game_data centered"
                         title={
-                          " (" +
-                          obj.minplaytime +
-                          "-" +
-                          obj.maxplaytime +
-                          ") Min"
+                          obj.minplaytime + "-" + obj.maxplaytime + " mins"
                         }
                       >
-                        <b>{obj.playingtime}</b>
+                        <b>{obj.playingtime + "'"}</b>
+                        <span>Playtime</span>
                       </p>
-                      <p className="game_data centered">Play time (mins)</p>
                     </Col>
                     <Col className="borderTop">
                       <p className="game_data centered">
                         <b>
                           {parseFloat(obj.averageweight).toFixed(1) + " / 5"}
                         </b>
+                        <span>Weight</span>
                       </p>
-                      <p className="game_data centered">Weight</p>
                     </Col>
                   </Row>
                 </Container>
-                <br />
                 <Container>
-                  <Row>
+                  <Row className="categories">
                     <Col sm={{ size: 6, order: 1 }} className="borderTop">
                       <p className="game_data">
                         <b>Game mechanics</b>
@@ -214,11 +221,9 @@ export default class Card extends Component {
                 </Container>
               </Col>
               {this.owners && (
-                <Col sm="3">
-                  <p className="game_data">
-                    <b>Owners</b>
-                  </p>
-                  <div className="owners">
+                <Col sm="2" className="owners">
+                  <h4 >Owners</h4>
+                  <div>
                     {this.owners.split(",").map((owner, ind) => (
                       <p className="game_data" key={ind}>
                         {owner}
