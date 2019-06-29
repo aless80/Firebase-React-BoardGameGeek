@@ -7,7 +7,7 @@ This site uses [Firebase](https://firebase.google.com/), allowing a group of peo
 
 Group's Games Tab             |  User's Games Tab             |  Game Search Tab
 :-------------------------:|:-------------------------:|:-------------------------:
-<img src="https://github.com/aless80/Firebase-React-BoardGameGeek/tree/master/img/GroupsGames.png" alt="drawing" width="300"/>  |  <img src="https://github.com/aless80/Firebase-React-BoardGameGeek/tree/master/img/MyGames.png" alt="drawing" width="300"/> |  <img src="https://github.com/aless80/Firebase-React-BoardGameGeek/tree/master/img/Search.png" alt="drawing" width="300"/>
+<img src="https://github.com/aless80/Firebase-React-BoardGameGeek/blob/master/img/GroupsGames.png" alt="drawing" width="300"/>  |  <img src="https://github.com/aless80/Firebase-React-BoardGameGeek/blob/master/img/MyGames.png" alt="drawing" width="300"/> |  <img src="https://github.com/aless80/Firebase-React-BoardGameGeek/blob/master/img/Search.png" alt="drawing" width="300"/>
 
 
 ## Set up
