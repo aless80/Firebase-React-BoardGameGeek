@@ -4,11 +4,11 @@
 This website allows authenticated users to look up board games on [Board Game Geek](https://boardgamegeek.com) using the site's [API](https://boardgamegeek.com/wiki/page/BGG_XML_API2). 
 This site uses [Firebase](https://firebase.google.com/), allowing a group of people (e.g. a boardgame MeetUp group) to share their available board games. 
 
-<!--
-Main page             |  Profile
-:-------------------------:|:-------------------------:
-<img src="https://github.com/aless80/Firebase-React-Forum/blob/master/img/PostList.png" alt="drawing" width="300"/>  |  <img src="https://github.com/aless80/Firebase-React-Forum/blob/master/img/Post.png" alt="drawing" width="300"/>
--->
+
+Group's Games Tab             |  User's Games Tab             |  Game Search Tab
+:-------------------------:|:-------------------------:|:-------------------------:
+<img src="https://github.com/aless80/Firebase-React-BoardGameGeek/tree/master/img/GroupsGames.png" alt="drawing" width="300"/>  |  <img src="https://github.com/aless80/Firebase-React-BoardGameGeek/tree/master/img/MyGames.png" alt="drawing" width="300"/> |  <img src="https://github.com/aless80/Firebase-React-BoardGameGeek/tree/master/img/Search.png" alt="drawing" width="300"/>
+
 
 ## Set up
 Create an account in Firebase with a database. Set up a Database. Find the configuration and place it in a src/Firebase.js file that you create from template:
@@ -54,6 +54,8 @@ Users: {
 Check https://brettspill.nærd.no/
 * SearchCollection: allow to add all games
 * instead of max-width: 600px;   in Tile.css, make the tiles "scale" with page zoom
+* in Card introduce links to Owners
+* click on Tile opens Card full screen
 
 ## TODO maybe
 * profile page with import from collection
