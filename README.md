@@ -1,5 +1,3 @@
-***WORK IN PROGRESS***
-
 ## Description
 This website allows authenticated users to look up board games on [Board Game Geek](https://boardgamegeek.com) using the site's [API](https://boardgamegeek.com/wiki/page/BGG_XML_API2). 
 This site uses [Firebase](https://firebase.google.com/), allowing a group of people (e.g. a boardgame MeetUp group) to share their available board games. 
